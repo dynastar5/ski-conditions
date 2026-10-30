@@ -90,6 +90,9 @@ h1{font-size:1.4rem;font-weight:700;margin-bottom:2px;background:linear-gradient
 .trail-header-left{display:flex;align-items:center;gap:10px}
 .season-badge{font-size:.6rem;padding:3px 10px;border-radius:10px;font-weight:600}
 .season-badge.closed{background:#ef444422;color:#ef4444;border:1px solid #ef444444}
+.season-badge.open{background:#22c55e22;color:#22c55e;border:1px solid #22c55e44}
+.season-badge.soon{background:#f59e0b22;color:#f59e0b;border:1px solid #f59e0b44}
+.season-note{font-size:.65rem;color:#6b7280;margin:-.5rem 0 .8rem}
 .trail-summary{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:1rem}
 .trail-stat{background:#0f1221;border:1px solid #1a1e35;border-radius:8px;padding:.7rem;text-align:center}
 .trail-stat-value{font-size:1.5rem;font-weight:700}
@@ -146,16 +149,18 @@ h1{font-size:1.4rem;font-weight:700;margin-bottom:2px;background:linear-gradient
 <!-- TRAILS -->
 <div class="tab-panel" id="tab-trails">
 <div class="trail-resorts">
-  <div class="trail-resort"><div class="trail-header"><div class="trail-header-left"><span class="resort-icon">🏔</span><div class="resort-name" style="color:#60a5fa">Keystone</div></div><span class="season-badge closed">Closed for Season</span></div>
-    <div class="trail-summary"><div class="trail-stat"><div class="trail-stat-value" style="color:#60a5fa">0<span class="metric-unit">/21</span></div><div class="trail-stat-label">Lifts</div></div><div class="trail-stat"><div class="trail-stat-value" style="color:#60a5fa">0<span class="metric-unit">/135</span></div><div class="trail-stat-label">Trails</div></div></div>
+  <div class="trail-resort"><div class="trail-header"><div class="trail-header-left"><span class="resort-icon">🏔</span><div class="resort-name" style="color:#60a5fa">Keystone</div></div><span class="season-badge" id="key-badge"></span></div>
+    <div class="season-note" id="key-note"></div>
+    <div class="trail-summary"><div class="trail-stat"><div class="trail-stat-value" style="color:#60a5fa"><span id="key-lifts-open">0</span><span class="metric-unit">/21</span></div><div class="trail-stat-label">Lifts</div></div><div class="trail-stat"><div class="trail-stat-value" style="color:#60a5fa"><span id="key-trails-open">0</span><span class="metric-unit">/135</span></div><div class="trail-stat-label">Trails</div></div></div>
     <div class="diff-row"><div class="diff-icon">🟢</div><div class="diff-label">Beginner</div><div class="diff-bar-bg"><div class="diff-bar-fill" style="width:19%;background:#22c55e"></div></div><div class="diff-count">19%</div></div>
     <div class="diff-row"><div class="diff-icon">🔵</div><div class="diff-label">Intermediate</div><div class="diff-bar-bg"><div class="diff-bar-fill" style="width:32%;background:#3b82f6"></div></div><div class="diff-count">32%</div></div>
     <div class="diff-row"><div class="diff-icon">⚫</div><div class="diff-label">Advanced</div><div class="diff-bar-bg"><div class="diff-bar-fill" style="width:49%;background:#1f2937"></div></div><div class="diff-count">49%</div></div>
     <div class="lift-section-label">Lifts</div><div id="key-lifts"></div>
     <div style="margin-top:.8rem"><a class="trail-link" href="https://www.keystoneresort.com/the-mountain/mountain-conditions/terrain-and-lift-status.aspx" target="_blank">Live Status ↗</a><a class="trail-link" href="https://www.keystoneresort.com/the-mountain/mountain-conditions/snow-and-weather-report.aspx" target="_blank">Snow Report ↗</a></div>
   </div>
-  <div class="trail-resort"><div class="trail-header"><div class="trail-header-left"><span class="resort-icon">⛰</span><div class="resort-name" style="color:#a78bfa">Breckenridge</div></div><span class="season-badge closed">Closed for Season</span></div>
-    <div class="trail-summary"><div class="trail-stat"><div class="trail-stat-value" style="color:#a78bfa">0<span class="metric-unit">/35</span></div><div class="trail-stat-label">Lifts</div></div><div class="trail-stat"><div class="trail-stat-value" style="color:#a78bfa">0<span class="metric-unit">/187</span></div><div class="trail-stat-label">Trails</div></div></div>
+  <div class="trail-resort"><div class="trail-header"><div class="trail-header-left"><span class="resort-icon">⛰</span><div class="resort-name" style="color:#a78bfa">Breckenridge</div></div><span class="season-badge" id="breck-badge"></span></div>
+    <div class="season-note" id="breck-note"></div>
+    <div class="trail-summary"><div class="trail-stat"><div class="trail-stat-value" style="color:#a78bfa"><span id="breck-lifts-open">0</span><span class="metric-unit">/35</span></div><div class="trail-stat-label">Lifts</div></div><div class="trail-stat"><div class="trail-stat-value" style="color:#a78bfa"><span id="breck-trails-open">0</span><span class="metric-unit">/187</span></div><div class="trail-stat-label">Trails</div></div></div>
     <div class="diff-row"><div class="diff-icon">🟢</div><div class="diff-label">Beginner</div><div class="diff-bar-bg"><div class="diff-bar-fill" style="width:14%;background:#22c55e"></div></div><div class="diff-count">14%</div></div>
     <div class="diff-row"><div class="diff-icon">🔵</div><div class="diff-label">Intermediate</div><div class="diff-bar-bg"><div class="diff-bar-fill" style="width:31%;background:#3b82f6"></div></div><div class="diff-count">31%</div></div>
     <div class="diff-row"><div class="diff-icon">⚫</div><div class="diff-label">Advanced</div><div class="diff-bar-bg"><div class="diff-bar-fill" style="width:19%;background:#1f2937"></div></div><div class="diff-count">19%</div></div>
@@ -463,31 +468,69 @@ function renderAlerts(a,err){
   el.innerHTML=h;
 }
 
-/* ── SNOTEL ── */
-const SNOTEL=[{id:'415',name:'Grizzly Peak',elev:'11200',note:'Near Keystone'},{id:'485',name:'Hoosier Pass',elev:'11400',note:'Near Breck'},{id:'505',name:'Copper Mtn',elev:'10600',note:'I-70 corridor'},{id:'935',name:'Fremont Pass',elev:'11400',note:'Near Leadville'}];
+/* ── Season status ──
+   Update these when resorts announce dates. open:null means "not announced yet".
+   Breck: Nov 6, 2026 (Vail Resorts announcement). Keystone: "as soon as possible in October", no date. */
+const SEASON={
+  key:  {open:null,        close:null},
+  breck:{open:'2026-11-06',close:null},
+};
+function todayMT(){return new Date().toLocaleDateString('en-CA',{timeZone:'America/Denver'});} // YYYY-MM-DD
+function fmtDate(d){return new Date(d+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'});}
+function renderSeason(){
+  const today=todayMT();
+  Object.entries(SEASON).forEach(([id,s])=>{
+    const badge=document.getElementById(id+'-badge'),note=document.getElementById(id+'-note');
+    let cls,label,msg,counts='0';
+    if(s.close&&today>s.close){cls='closed';label='Closed for Season';msg=`Closed ${fmtDate(s.close)}`;}
+    else if(s.open&&today>=s.open){cls='open';label='Open';msg='Live lift & trail counts: tap Live Status below';counts='—';}
+    else if(s.open){
+      const days=Math.round((new Date(s.open+'T12:00:00')-new Date(today+'T12:00:00'))/864e5);
+      cls='soon';label=`Opens ${fmtDate(s.open)}`;msg=days===1?'Opening tomorrow':`${days} days to opening day`;
+    }else{cls='soon';label='Opening Soon';msg='Opening date not announced. Check Live Status for updates';counts='—';}
+    badge.className='season-badge '+cls;badge.textContent=label;note.textContent=msg;
+    document.getElementById(id+'-lifts-open').textContent=counts;
+    document.getElementById(id+'-trails-open').textContent=counts;
+  });
+}
+
+/* ── SNOTEL ──
+   Station IDs verified against the NRCS Colorado station list. */
+const SNOTEL=[
+  {id:'505',name:'Grizzly Peak',note:'Near Keystone'},
+  {id:'935',name:'Jackwhacker Gulch',note:'11,053\''},
+  {id:'531',name:'Hoosier Pass',note:'Near Breck'},
+  {id:'415',name:'Copper Mountain',note:'I-70 corridor'},
+  {id:'485',name:'Fremont Pass',note:'Near Leadville'},
+];
+// Your Cloudflare Worker, used only if NRCS blocks the direct request (CORS).
+const PROXY='https://windy-proxy.dynastar5.workers.dev';
 // FIX 4: treat a real 0 as 0, only blanks/non-numbers as missing
 function num(v){const n=parseFloat(v);return isNaN(n)?null:n;}
-async function fetchSnotel(){
-  const r=[];
-  for(const s of SNOTEL){
-    try{
-      const u=`https://wcc.sc.egov.usda.gov/reportGenerator/view_csv/customSingleStationReport/daily/end_of_period/${s.id}:CO:SNTL|name/-1,0/SNWD::value,WTEQ::value,PREC::value,TOBS::value?fitToScreen=false`;
-      const res=await fetch(u);const t=await res.text();
-      const lines=t.split('\n').filter(l=>!l.startsWith('#')&&l.trim());
-      if(lines.length>=2){
-        const v=lines[lines.length-1].split(',');
-        r.push({...s,date:v[0],snowDepth:num(v[1]),swe:num(v[2]),temp:num(v[4]),error:null});
-      }else r.push({...s,error:'No data'});
-    }catch(e){r.push({...s,error:e.message});}
-  }
-  return r;
+async function getText(url){
+  try{const r=await fetch(url);if(r.ok)return await r.text();}catch(e){}
+  const r=await fetch(PROXY+'?url='+encodeURIComponent(url)); // CORS fallback
+  if(!r.ok)throw new Error('Blocked (CORS) — update the Worker');
+  return await r.text();
 }
+async function fetchStation(s){
+  try{
+    const u=`https://wcc.sc.egov.usda.gov/reportGenerator/view_csv/customSingleStationReport/daily/end_of_period/${s.id}:CO:SNTL%7Cid=%22%22%7Cname/-2,0/SNWD::value,WTEQ::value,TOBS::value?fitToScreen=false`;
+    const t=await getText(u);
+    const rows=t.split('\n').filter(l=>l.trim()&&!l.startsWith('#')).slice(1).map(l=>l.split(','));
+    // use the newest row that actually has readings (today's row is often blank early in the day)
+    const v=[...rows].reverse().find(r=>r.slice(1).some(x=>num(x)!==null));
+    if(!v)return{...s,error:'No recent data'};
+    return{...s,date:v[0],snowDepth:num(v[1]),swe:num(v[2]),temp:num(v[3]),error:null};
+  }catch(e){return{...s,error:e.message};}
+}
+function fetchSnotel(){return Promise.all(SNOTEL.map(fetchStation));} // parallel, not one-by-one
 function renderSnotel(stations){
   const el=document.getElementById('snotel-content');
   let h='<div class="snotel-grid">';
   stations.forEach(s=>{
-    if(s.error){h+=`<div class="snotel-station"><div class="snotel-name">${s.name}</div><div class="snotel-info">${s.elev}' · ${s.note}</div><div style="color:#6b7280;font-size:.75rem">${s.error}</div></div>`;return;}
-    h+=`<div class="snotel-station"><div class="snotel-name">📡 ${s.name}</div><div class="snotel-info">${s.elev}' · ${s.note} · ${s.date}</div><div class="snotel-metrics">
+    if(s.error){h+=`<div class="snotel-station"><div class="snotel-name">${s.name}</div><div class="snotel-info">#${s.id} · ${s.note}</div><div style="color:#6b7280;font-size:.75rem">${s.error}</div></div>`;return;}
+    h+=`<div class="snotel-station"><div class="snotel-name">📡 ${s.name}</div><div class="snotel-info">#${s.id} · ${s.note} · ${s.date}</div><div class="snotel-metrics">
       <div class="snotel-metric"><div class="snotel-metric-value">${s.snowDepth!==null?s.snowDepth+'"':'—'}</div><div class="snotel-metric-label">Snow Depth</div></div>
       <div class="snotel-metric"><div class="snotel-metric-value" style="color:#a78bfa">${s.swe!==null?s.swe+'"':'—'}</div><div class="snotel-metric-label">SWE</div></div>
       <div class="snotel-metric"><div class="snotel-metric-value" style="color:#22c55e">${s.temp!==null?Math.round(s.temp)+'°F':'—'}</div><div class="snotel-metric-label">Temp</div></div>
@@ -504,7 +547,7 @@ async function fetchAlerts(){
 }
 
 /* ── Init ── */
-renderLifts();fetchAll();
+renderLifts();renderSeason();fetchAll();
 </script>
 </body>
 </html>
