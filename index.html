@@ -1,1 +1,403 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Summit County Ski Conditions</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,sans-serif;background:#0b0e1a;color:#e8eaf0;padding:1.2rem;max-width:1200px;margin:0 auto}
+h1{font-size:1.4rem;font-weight:700;margin-bottom:2px;background:linear-gradient(90deg,#60a5fa,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.sub{font-size:.72rem;color:#4b5563;margin-bottom:1rem}
+.btn{background:#4f6ef7;color:#fff;border:none;border-radius:8px;padding:9px 22px;font-weight:500;cursor:pointer;font-size:.85rem;margin-bottom:1rem}
+.btn:disabled{background:#2d3148;color:#6b7280;cursor:default}
+.main-tabs{display:flex;gap:4px;margin-bottom:1rem;border-bottom:1px solid #1e2240}
+.main-tab{padding:8px 20px;font-size:.82rem;font-weight:600;cursor:pointer;border:none;background:transparent;color:#4b5563;border-bottom:2px solid transparent;transition:all .2s}
+.main-tab.on{color:#e8eaf0;border-bottom-color:#4f6ef7}
+.main-tab:hover{color:#9ca3af}
+.tab-panel{display:none}.tab-panel.on{display:block}
+.resorts{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:1rem}
+.resort{background:#131627;border:1px solid #1e2240;border-radius:12px;padding:1rem;overflow:hidden}
+.resort-header{display:flex;align-items:center;gap:10px;margin-bottom:1rem}
+.resort-icon{font-size:1.4rem}.resort-name{font-size:1.05rem;font-weight:700}.resort-elev{font-size:.65rem;color:#4b5563;margin-top:2px}
+.zone{margin-bottom:.8rem}
+.zone-label{font-size:.6rem;font-weight:600;color:#4b5563;text-transform:uppercase;letter-spacing:.8px;margin-bottom:.5rem;display:flex;align-items:center;gap:6px}
+.zone-label .dot{width:6px;height:6px;border-radius:50%}
+.metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.metric{background:#0f1221;border:1px solid #1a1e35;border-radius:8px;padding:.6rem}
+.metric-label{font-size:.58rem;color:#4b5563;text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px}
+.metric-value{font-size:1.3rem;font-weight:700}
+.metric-unit{font-size:.7rem;color:#6b7280;font-weight:400}
+.metric-sub{font-size:.6rem;color:#4b5563;margin-top:2px}
+.snowfall-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:.8rem}
+.snow-card{background:#0f1221;border:1px solid #1a1e35;border-radius:8px;padding:.6rem;text-align:center}
+.snow-card-label{font-size:.58rem;color:#4b5563;text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px}
+.snow-card-value{font-size:1.2rem;font-weight:700;color:#60a5fa}
+.snow-card-value .unit{font-size:.7rem;color:#6b7280;font-weight:400}
+.mini-chart{position:relative;width:100%;height:140px;margin-top:.5rem}
+.shared-section{background:#131627;border:1px solid #1e2240;border-radius:12px;padding:1rem;margin-bottom:1rem}
+.shared-title{font-size:.85rem;font-weight:600;margin-bottom:.8rem;display:flex;align-items:center;gap:8px}
+.chart-wrap{position:relative;width:100%;height:220px}
+.legend{display:flex;gap:16px;margin-bottom:.6rem;flex-wrap:wrap}
+.legend-item{display:flex;align-items:center;gap:5px;font-size:.7rem;color:#9ca3af}
+.legend-pip{width:10px;height:3px;border-radius:2px}
+.status{font-size:.72rem;color:#4b5563;text-align:center;padding:.5rem 0}
+.freeze-bar{height:6px;border-radius:3px;margin-top:4px;overflow:hidden}
+.freeze-fill{height:100%;border-radius:3px;transition:width .5s}
+.wind-dir{font-size:.65rem;color:#6b7280}
+.loading-pulse{animation:pulse 1.5s infinite}
+@keyframes pulse{0%,100%{opacity:.4}50%{opacity:1}}
+/* Powder alert */
+.powder-alert{background:linear-gradient(135deg,#1e3a5f,#1a2744);border:1px solid #3b82f6;border-radius:10px;padding:.8rem;margin-bottom:.8rem;display:flex;align-items:center;gap:10px}
+.powder-alert .pa-icon{font-size:1.8rem}
+.powder-alert .pa-text{font-size:.85rem;font-weight:600;color:#60a5fa}
+.powder-alert .pa-sub{font-size:.68rem;color:#6b7280;margin-top:2px}
+/* Quality badge */
+.snow-quality{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:10px;font-size:.65rem;font-weight:600;margin-top:4px}
+.sq-champ{background:#7c3aed22;color:#a78bfa;border:1px solid #7c3aed44}
+.sq-dry{background:#3b82f622;color:#60a5fa;border:1px solid #3b82f644}
+.sq-avg{background:#22c55e22;color:#22c55e;border:1px solid #22c55e44}
+.sq-wet{background:#f59e0b22;color:#f59e0b;border:1px solid #f59e0b44}
+.sq-heavy{background:#ef444422;color:#ef4444;border:1px solid #ef444444}
+/* Inversion */
+.inversion-bar{display:flex;align-items:center;gap:8px;margin-top:4px}
+.inv-label{font-size:.65rem;color:#6b7280;width:50px}
+.inv-bar{flex:1;height:14px;background:#1a1e35;border-radius:4px;position:relative;overflow:hidden;display:flex}
+.inv-fill{height:100%;display:flex;align-items:center;justify-content:center;font-size:.55rem;font-weight:600;color:#fff;min-width:30px}
+/* AQI */
+.aqi-bar{height:8px;border-radius:4px;margin-top:4px;overflow:hidden;background:#1a1e35}
+.aqi-fill{height:100%;border-radius:4px;transition:width .5s}
+/* Alerts tab */
+.alert-card{background:#0f1221;border-left:3px solid;border-radius:6px;padding:.8rem;margin-bottom:.6rem}
+.alert-card.extreme{border-color:#ef4444;background:#1a0f0f}
+.alert-card.severe{border-color:#f97316;background:#1a150f}
+.alert-card.moderate{border-color:#f59e0b;background:#1a180f}
+.alert-card.minor{border-color:#60a5fa;background:#0f121a}
+.alert-card.unknown{border-color:#6b7280}
+.alert-event{font-size:.85rem;font-weight:600;margin-bottom:3px}
+.alert-meta{font-size:.65rem;color:#4b5563;margin-bottom:5px}
+.alert-desc{font-size:.72rem;color:#9ca3af;line-height:1.5;max-height:80px;overflow:hidden;transition:max-height .3s}
+.alert-desc.expanded{max-height:2000px}
+.alert-toggle{font-size:.65rem;color:#4f6ef7;cursor:pointer;border:none;background:none;padding:2px 0;margin-top:3px}
+.no-alerts{background:#22c55e11;border:1px solid #22c55e33;border-radius:8px;padding:1rem;text-align:center;color:#22c55e;font-size:.85rem}
+.snotel-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px}
+.snotel-station{background:#0f1221;border:1px solid #1a1e35;border-radius:8px;padding:.8rem}
+.snotel-name{font-size:.8rem;font-weight:600;margin-bottom:2px}
+.snotel-info{font-size:.6rem;color:#4b5563;margin-bottom:.6rem}
+.snotel-metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.snotel-metric{text-align:center}
+.snotel-metric-value{font-size:1.1rem;font-weight:700;color:#60a5fa}
+.snotel-metric-label{font-size:.55rem;color:#4b5563;text-transform:uppercase;letter-spacing:.5px;margin-top:2px}
+/* Trail tab */
+.trail-resorts{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.trail-resort{background:#131627;border:1px solid #1e2240;border-radius:12px;padding:1rem}
+.trail-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem}
+.trail-header-left{display:flex;align-items:center;gap:10px}
+.season-badge{font-size:.6rem;padding:3px 10px;border-radius:10px;font-weight:600}
+.season-badge.closed{background:#ef444422;color:#ef4444;border:1px solid #ef444444}
+.trail-summary{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:1rem}
+.trail-stat{background:#0f1221;border:1px solid #1a1e35;border-radius:8px;padding:.7rem;text-align:center}
+.trail-stat-value{font-size:1.5rem;font-weight:700}
+.trail-stat-label{font-size:.6rem;color:#4b5563;text-transform:uppercase;letter-spacing:.5px;margin-top:3px}
+.trail-stat-detail{font-size:.65rem;color:#6b7280;margin-top:2px}
+.diff-row{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.diff-icon{width:18px;font-size:.7rem;flex-shrink:0;text-align:center}
+.diff-label{font-size:.7rem;color:#9ca3af;width:90px;flex-shrink:0}
+.diff-bar-bg{flex:1;height:8px;background:#1a1e35;border-radius:4px;overflow:hidden}
+.diff-bar-fill{height:100%;border-radius:4px}
+.diff-count{font-size:.7rem;color:#6b7280;width:40px;text-align:right}
+.lift-section-label{font-size:.6rem;font-weight:600;color:#4b5563;text-transform:uppercase;letter-spacing:.8px;margin-bottom:.5rem;margin-top:.8rem}
+.lift-item{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid #1a1e3544;font-size:.75rem}
+.lift-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.lift-dot.closed{background:#ef4444}
+.lift-name{flex:1;color:#9ca3af}
+.lift-type{font-size:.6rem;color:#374151}
+.trail-link{font-size:.7rem;color:#4f6ef7;text-decoration:none;padding:4px 12px;border:1px solid #4f6ef733;border-radius:6px;display:inline-block;margin:2px}
+@media(max-width:700px){body{padding:.7rem}.resorts,.trail-resorts{grid-template-columns:1fr}.metric-value{font-size:1.1rem}.mini-chart{height:120px}.chart-wrap{height:180px}.main-tab{padding:6px 12px;font-size:.72rem}.metrics{grid-template-columns:repeat(3,1fr);gap:5px}.metric{padding:.5rem}}
+@media(min-width:1000px){.mini-chart{height:160px}.chart-wrap{height:260px}}
+</style>
+</head>
+<body>
+<h1>⛷ Summit County Conditions</h1>
+<p class="sub">Keystone · Breckenridge — Live mountain weather, snow quality & trail status</p>
+<div class="main-tabs">
+  <button class="main-tab on" onclick="switchTab('conditions',this)">Conditions</button>
+  <button class="main-tab" onclick="switchTab('trails',this)">Trails & Lifts</button>
+  <button class="main-tab" onclick="switchTab('alerts',this)">Alerts & Obs</button>
+</div>
 
+<!-- CONDITIONS -->
+<div class="tab-panel on" id="tab-conditions">
+<button class="btn" id="fetchBtn" onclick="fetchAll()">Refresh Conditions</button>
+<div class="resorts">
+  <div class="resort"><div class="resort-header"><span class="resort-icon">🏔</span><div><div class="resort-name" style="color:#60a5fa">Keystone</div><div class="resort-elev">Base 9,280' · Summit 12,408' · 3,148 acres</div></div></div><div id="key-content"><div class="loading-pulse" style="color:#4b5563;font-size:.8rem">Loading…</div></div></div>
+  <div class="resort"><div class="resort-header"><span class="resort-icon">⛰</span><div><div class="resort-name" style="color:#a78bfa">Breckenridge</div><div class="resort-elev">Base 9,600' · Summit 12,998' · 2,908 acres</div></div></div><div id="breck-content"><div class="loading-pulse" style="color:#4b5563;font-size:.8rem">Loading…</div></div></div>
+</div>
+<!-- AQI + I-70 -->
+<div class="resorts">
+  <div class="shared-section" style="margin-bottom:0"><div class="shared-title">🌬 Air Quality</div><div id="aqi-content"><div class="loading-pulse" style="color:#4b5563;font-size:.8rem">Loading…</div></div></div>
+  <div class="shared-section" style="margin-bottom:0"><div class="shared-title">🛣 I-70 Corridor</div><div id="i70-content"><div style="font-size:.75rem;color:#6b7280">Live conditions from CDOT</div><div style="margin-top:.5rem;display:flex;flex-wrap:wrap;gap:6px"><a class="trail-link" href="https://www.cotrip.org/map#/roadConditions?region=mountains&route=I-70" target="_blank">COtrip Live Map ↗</a><a class="trail-link" href="https://www.codot.gov/travel/i70mountain" target="_blank">CDOT I-70 ↗</a></div></div></div>
+</div>
+<!-- Charts -->
+<div class="shared-section" style="margin-top:1rem">
+  <div class="shared-title">❄️ 7-Day Snowfall Forecast</div>
+  <div class="legend"><div class="legend-item"><span class="legend-pip" style="background:#60a5fa"></span>Keystone</div><div class="legend-item"><span class="legend-pip" style="background:#a78bfa"></span>Breck</div></div>
+  <div class="chart-wrap"><canvas id="snowChart"></canvas></div>
+</div>
+<div class="shared-section">
+  <div class="shared-title">🌡 48h Summit Temperature</div>
+  <div class="legend"><div class="legend-item"><span class="legend-pip" style="background:#60a5fa"></span>Keystone</div><div class="legend-item"><span class="legend-pip" style="background:#a78bfa"></span>Breck</div><div class="legend-item"><span class="legend-pip" style="background:#22c55e"></span>Freezing</div></div>
+  <div class="chart-wrap"><canvas id="tempCompChart"></canvas></div>
+</div>
+</div>
+
+<!-- TRAILS -->
+<div class="tab-panel" id="tab-trails">
+<div class="trail-resorts">
+  <div class="trail-resort"><div class="trail-header"><div class="trail-header-left"><span class="resort-icon">🏔</span><div class="resort-name" style="color:#60a5fa">Keystone</div></div><span class="season-badge closed">Closed for Season</span></div>
+    <div class="trail-summary"><div class="trail-stat"><div class="trail-stat-value" style="color:#60a5fa">0<span class="metric-unit">/21</span></div><div class="trail-stat-label">Lifts</div></div><div class="trail-stat"><div class="trail-stat-value" style="color:#60a5fa">0<span class="metric-unit">/135</span></div><div class="trail-stat-label">Trails</div></div></div>
+    <div class="diff-row"><div class="diff-icon">🟢</div><div class="diff-label">Beginner</div><div class="diff-bar-bg"><div class="diff-bar-fill" style="width:19%;background:#22c55e"></div></div><div class="diff-count">19%</div></div>
+    <div class="diff-row"><div class="diff-icon">🔵</div><div class="diff-label">Intermediate</div><div class="diff-bar-bg"><div class="diff-bar-fill" style="width:32%;background:#3b82f6"></div></div><div class="diff-count">32%</div></div>
+    <div class="diff-row"><div class="diff-icon">⚫</div><div class="diff-label">Advanced</div><div class="diff-bar-bg"><div class="diff-bar-fill" style="width:49%;background:#1f2937"></div></div><div class="diff-count">49%</div></div>
+    <div class="lift-section-label">Lifts</div><div id="key-lifts"></div>
+    <div style="margin-top:.8rem"><a class="trail-link" href="https://www.keystoneresort.com/the-mountain/mountain-conditions/terrain-and-lift-status.aspx" target="_blank">Live Status ↗</a><a class="trail-link" href="https://www.keystoneresort.com/the-mountain/mountain-conditions/snow-and-weather-report.aspx" target="_blank">Snow Report ↗</a></div>
+  </div>
+  <div class="trail-resort"><div class="trail-header"><div class="trail-header-left"><span class="resort-icon">⛰</span><div class="resort-name" style="color:#a78bfa">Breckenridge</div></div><span class="season-badge closed">Closed for Season</span></div>
+    <div class="trail-summary"><div class="trail-stat"><div class="trail-stat-value" style="color:#a78bfa">0<span class="metric-unit">/35</span></div><div class="trail-stat-label">Lifts</div></div><div class="trail-stat"><div class="trail-stat-value" style="color:#a78bfa">0<span class="metric-unit">/187</span></div><div class="trail-stat-label">Trails</div></div></div>
+    <div class="diff-row"><div class="diff-icon">🟢</div><div class="diff-label">Beginner</div><div class="diff-bar-bg"><div class="diff-bar-fill" style="width:14%;background:#22c55e"></div></div><div class="diff-count">14%</div></div>
+    <div class="diff-row"><div class="diff-icon">🔵</div><div class="diff-label">Intermediate</div><div class="diff-bar-bg"><div class="diff-bar-fill" style="width:31%;background:#3b82f6"></div></div><div class="diff-count">31%</div></div>
+    <div class="diff-row"><div class="diff-icon">⚫</div><div class="diff-label">Advanced</div><div class="diff-bar-bg"><div class="diff-bar-fill" style="width:19%;background:#1f2937"></div></div><div class="diff-count">19%</div></div>
+    <div class="diff-row"><div class="diff-icon">⚫⚫</div><div class="diff-label">Expert</div><div class="diff-bar-bg"><div class="diff-bar-fill" style="width:36%;background:#7c3aed"></div></div><div class="diff-count">36%</div></div>
+    <div class="lift-section-label">Lifts</div><div id="breck-lifts"></div>
+    <div style="margin-top:.8rem"><a class="trail-link" href="https://www.breckenridge.com/the-mountain/mountain-conditions/terrain-and-lift-status.aspx" target="_blank">Live Status ↗</a><a class="trail-link" href="https://www.breckenridge.com/the-mountain/mountain-conditions/snow-and-weather-report.aspx" target="_blank">Snow Report ↗</a></div>
+  </div>
+</div>
+</div>
+
+<!-- ALERTS -->
+<div class="tab-panel" id="tab-alerts">
+<button class="btn" onclick="fetchAlerts()">Refresh Alerts</button>
+<div class="shared-section" style="border-color:#ef444433"><div class="shared-title">⚠️ NWS Alerts — Summit County</div><div id="alerts-content"><div class="loading-pulse" style="color:#4b5563;font-size:.8rem">Loading…</div></div></div>
+<div class="shared-section"><div class="shared-title">📡 SNOTEL Observations</div><div id="snotel-content"><div class="loading-pulse" style="color:#4b5563;font-size:.8rem">Loading…</div></div></div>
+<div class="shared-section"><div class="shared-title">🔗 Resources</div><div style="display:flex;flex-wrap:wrap;gap:6px">
+  <a class="trail-link" href="https://www.weather.gov/bou/" target="_blank">NWS Boulder ↗</a>
+  <a class="trail-link" href="https://avalanche.state.co.us/forecasts/backcountry-avalanche/vail-summit-county" target="_blank">CAIC Avalanche ↗</a>
+  <a class="trail-link" href="https://opensnow.com/location/keystone" target="_blank">OpenSnow: Keystone ↗</a>
+  <a class="trail-link" href="https://opensnow.com/location/breckenridge" target="_blank">OpenSnow: Breck ↗</a>
+  <a class="trail-link" href="https://www.cotrip.org/travel-alerts" target="_blank">CDOT Alerts ↗</a>
+  <a class="trail-link" href="https://www.wcc.nrcs.usda.gov/snow/" target="_blank">SNOTEL ↗</a>
+</div></div>
+</div>
+
+<div class="status" id="status">Loading…</div>
+
+<script>
+/* ── Tabs ── */
+let alertsLoaded=false;
+function switchTab(id,el){document.querySelectorAll('.main-tab').forEach(t=>t.classList.remove('on'));document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('on'));el.classList.add('on');document.getElementById('tab-'+id).classList.add('on');if(id==='alerts'&&!alertsLoaded){alertsLoaded=true;fetchAlerts();}}
+
+/* ── Lifts ── */
+const KEY_LIFTS=[{name:'River Run Gondola',type:'Gondola',peak:'Dercum'},{name:'Outpost Gondola',type:'Gondola',peak:'Dercum'},{name:'Summit Express',type:'HSQ',peak:'Dercum'},{name:'Montezuma Express',type:'HS6',peak:'Dercum'},{name:'A51',type:'HS6',peak:'Dercum'},{name:'Peru Express',type:'HS6',peak:'Dercum'},{name:'Ruby Express',type:'HS6',peak:'North Peak'},{name:'Santiago Express',type:'HSQ',peak:'North Peak'},{name:'Outback Express',type:'HSQ',peak:'Outback'}];
+const BRECK_LIFTS=[{name:'BreckConnect Gondola',type:'Gondola',peak:'Peak 8'},{name:'Colorado SuperChair',type:'HS6',peak:'Peak 8'},{name:'Imperial Express',type:'HS6',peak:'Peak 8'},{name:'Independence SuperChair',type:'HS6',peak:'Peak 7'},{name:'Freedom SuperChair',type:'HS6',peak:'Peak 7'},{name:'Mercury SuperChair',type:'HSQ',peak:'Peak 9'},{name:'Quicksilver SuperChair',type:'HS6',peak:'Peak 9'},{name:'5 Chair',type:'HSQ',peak:'Peak 10'},{name:'Falcon SuperChair',type:'HSQ',peak:'Peak 10'},{name:'Kensho SuperChair',type:'HSQ',peak:'Peak 6'}];
+function renderLifts(){['key','breck'].forEach(id=>{const lifts=id==='key'?KEY_LIFTS:BRECK_LIFTS;const el=document.getElementById(id+'-lifts');const peaks={};lifts.forEach(l=>{if(!peaks[l.peak])peaks[l.peak]=[];peaks[l.peak].push(l);});let h='';Object.entries(peaks).forEach(([p,ls])=>{h+=`<div class="lift-section-label" style="margin-top:.4rem">${p}</div>`;ls.forEach(l=>{h+=`<div class="lift-item"><span class="lift-dot closed"></span><span class="lift-name">${l.name}</span><span class="lift-type">${l.type}</span></div>`;});});el.innerHTML=h;});}
+
+/* ── Config ── */
+const RESORTS={
+  key:{name:'Keystone',color:'#60a5fa',base:{lat:39.6069,lon:-105.9522,elev:2828},summit:{lat:39.5817,lon:-105.9397,elev:3782}},
+  breck:{name:'Breckenridge',color:'#a78bfa',base:{lat:39.4817,lon:-106.0384,elev:2926},summit:{lat:39.4633,lon:-106.0673,elev:3962}},
+};
+let allResortData={},snowChartInst=null,tempCompChartInst=null;
+function setStatus(m){document.getElementById('status').textContent=m;}
+function mToFt(m){return Math.round(m*3.281);}
+
+/* ── Calculations ── */
+function windChill(tempF,windMph){
+  if(tempF>50||windMph<=3)return Math.round(tempF);
+  return Math.round(35.74+0.6215*tempF-35.75*Math.pow(windMph,0.16)+0.4275*tempF*Math.pow(windMph,0.16));
+}
+function snowRatio(tempF){
+  if(tempF<=10)return{ratio:'20:1',label:'Champagne Powder',cls:'sq-champ',emoji:'✨'};
+  if(tempF<=20)return{ratio:'15:1',label:'Dry Powder',cls:'sq-dry',emoji:'❄️'};
+  if(tempF<=28)return{ratio:'12:1',label:'Average',cls:'sq-avg',emoji:'👍'};
+  if(tempF<=34)return{ratio:'8:1',label:'Wet/Packable',cls:'sq-wet',emoji:'💧'};
+  return{ratio:'5:1',label:'Heavy/Wet',cls:'sq-heavy',emoji:'🌧'};
+}
+function uvLabel(uv){
+  if(uv<=2)return{text:'Low',color:'#22c55e'};
+  if(uv<=5)return{text:'Moderate',color:'#f59e0b'};
+  if(uv<=7)return{text:'High',color:'#f97316'};
+  if(uv<=10)return{text:'Very High',color:'#ef4444'};
+  return{text:'Extreme',color:'#7c3aed'};
+}
+function visLabel(m){
+  const mi=m/1609.34;
+  if(mi>=10)return{text:Math.round(mi)+' mi',color:'#22c55e',warn:''};
+  if(mi>=5)return{text:mi.toFixed(1)+' mi',color:'#f59e0b',warn:'Reduced'};
+  if(mi>=1)return{text:mi.toFixed(1)+' mi',color:'#f97316',warn:'Low'};
+  return{text:Math.round(m)+' m',color:'#ef4444',warn:'⚠️ Poor'};
+}
+function aqiLabel(aqi){
+  if(aqi<=50)return{text:'Good',color:'#22c55e'};
+  if(aqi<=100)return{text:'Moderate',color:'#f59e0b'};
+  if(aqi<=150)return{text:'Unhealthy (Sensitive)',color:'#f97316'};
+  if(aqi<=200)return{text:'Unhealthy',color:'#ef4444'};
+  return{text:'Very Unhealthy',color:'#7c3aed'};
+}
+const WMO={0:'Clear ☀️',1:'Mostly Clear 🌤',2:'Partly Cloudy ⛅',3:'Overcast ☁️',45:'Fog 🌫',51:'Drizzle 🌧',61:'Rain 🌧',71:'Light Snow 🌨',73:'Snow ❄️',75:'Heavy Snow ❄️',77:'Snow Grains',80:'Showers',85:'Snow Showers 🌨',86:'Heavy Snow ❄️',95:'Thunderstorm ⛈'};
+function windDir(d){return['N','NNE','NE','ENE','E','ESE','SE','SSE','S','SSW','SW','WSW','W','WNW','NW','NNW'][Math.round((d%360)/22.5)%16];}
+function fmtTime(iso){return new Date(iso).toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit',hour12:true,timeZone:'America/Denver'});}
+
+/* ── Data Fetch ── */
+async function fetchResortData(id){
+  const r=RESORTS[id];
+  const bU=`https://api.open-meteo.com/v1/forecast?latitude=${r.base.lat}&longitude=${r.base.lon}&elevation=${r.base.elev}&hourly=temperature_2m,snowfall,wind_speed_10m,wind_direction_10m,relative_humidity_2m,dew_point_2m,visibility&daily=temperature_2m_max,temperature_2m_min,snowfall_sum,sunrise,sunset,uv_index_max&current=temperature_2m,weather_code,wind_speed_10m,wind_direction_10m,relative_humidity_2m,dew_point_2m&temperature_unit=fahrenheit&wind_speed_unit=mph&precipitation_unit=inch&forecast_days=7&timezone=America/Denver`;
+  const sU=`https://api.open-meteo.com/v1/forecast?latitude=${r.summit.lat}&longitude=${r.summit.lon}&elevation=${r.summit.elev}&hourly=temperature_2m,snowfall,wind_speed_10m,wind_direction_10m,freezinglevel_height,visibility,dew_point_2m&daily=temperature_2m_max,temperature_2m_min,snowfall_sum,sunrise,sunset,uv_index_max&current=temperature_2m,weather_code,wind_speed_10m,wind_direction_10m,dew_point_2m&temperature_unit=fahrenheit&wind_speed_unit=mph&precipitation_unit=inch&forecast_days=7&timezone=America/Denver`;
+  const[bR,sR]=await Promise.all([fetch(bU),fetch(sU)]);
+  const[b,s]=await Promise.all([bR.json(),sR.json()]);
+  if(b.error||s.error)return{error:b.error||s.error};
+  return{base:b,summit:s};
+}
+
+async function fetchAQI(){
+  try{
+    const r=await fetch('https://air-quality-api.open-meteo.com/v1/air-quality?latitude=39.57&longitude=-105.95&current=us_aqi,pm2_5,pm10&timezone=America/Denver');
+    return await r.json();
+  }catch(e){return{error:e.message};}
+}
+
+/* ── Render Resort ── */
+function renderResort(id,data){
+  const el=document.getElementById(id+'-content');const r=RESORTS[id];
+  if(data.error){el.innerHTML=`<div style="color:#ef4444">${data.error}</div>`;return;}
+  const b=data.base,s=data.summit,bC=b.current,sC=s.current;
+  const now=new Date().toISOString().slice(0,13);
+  const hi=(s.hourly?.time||[]).findIndex(t=>t>=now);const hIdx=hi>=0?hi:0;
+  const fl=s.hourly?.freezinglevel_height?.[hIdx];const fFt=fl?mToFt(fl):null;
+  const sn24=s.daily?.snowfall_sum?.[0]||0;
+  const sn48=sn24+(s.daily?.snowfall_sum?.[1]||0);
+  const sn72=sn48+(s.daily?.snowfall_sum?.[2]||0);
+  const bE=r.base.elev*3.281,sE=r.summit.elev*3.281;
+  const fp=fFt?Math.max(0,Math.min(100,((fFt-bE)/(sE-bE))*100)):0;
+  const fc=fp>80?'#ef4444':fp>50?'#f59e0b':'#22c55e';
+  // Wind chill
+  const sWC=windChill(sC.temperature_2m,sC.wind_speed_10m);
+  const bWC=windChill(bC.temperature_2m,bC.wind_speed_10m);
+  // Snow quality
+  const sq=snowRatio(sC.temperature_2m);
+  // Powder day
+  const isPowder=sn24>=6;
+  // UV
+  const uvMax=s.daily?.uv_index_max?.[0]||0;
+  const uv=uvLabel(uvMax);
+  // Visibility
+  const vis=s.hourly?.visibility?.[hIdx];
+  const vl=vis!==undefined?visLabel(vis):{text:'—',color:'#4b5563',warn:''};
+  // Dew point
+  const sDew=sC.dew_point_2m;const bDew=bC.dew_point_2m;
+  // Sunrise/sunset
+  const sunrise=s.daily?.sunrise?.[0];const sunset=s.daily?.sunset?.[0];
+  // Inversion check
+  const spread=Math.round(bC.temperature_2m-sC.temperature_2m);
+  const isInversion=spread<0;
+  // Build HTML
+  let html='';
+  // Powder alert
+  if(isPowder){html+=`<div class="powder-alert"><div class="pa-icon">🎿</div><div><div class="pa-text">POWDER DAY! ${sn24.toFixed(1)}" in the next 24h</div><div class="pa-sub">${sn48.toFixed(1)}" over 48h · ${sn72.toFixed(1)}" over 72h</div></div></div>`;}
+  // Summit
+  html+=`<div class="zone"><div class="zone-label"><span class="dot" style="background:${r.color}"></span>Summit · ${mToFt(r.summit.elev).toLocaleString()}'</div>
+    <div class="metrics">
+      <div class="metric"><div class="metric-label">Temp</div><div class="metric-value">${Math.round(sC.temperature_2m)}°<span class="metric-unit">F</span></div><div class="metric-sub">${WMO[sC.weather_code]||'—'}</div></div>
+      <div class="metric"><div class="metric-label">Feels Like</div><div class="metric-value" style="color:${sWC<=0?'#60a5fa':sWC<=20?'#38bdf8':'#e8eaf0'}">${sWC}°<span class="metric-unit">F</span></div><div class="metric-sub">Wind chill</div></div>
+      <div class="metric"><div class="metric-label">Wind</div><div class="metric-value">${Math.round(sC.wind_speed_10m)}<span class="metric-unit"> mph</span></div><div class="wind-dir">${windDir(sC.wind_direction_10m)} ${Math.round(sC.wind_direction_10m)}°</div></div>
+      <div class="metric"><div class="metric-label">UV Index</div><div class="metric-value" style="color:${uv.color}">${uvMax.toFixed(1)}</div><div class="metric-sub" style="color:${uv.color}">${uv.text}</div></div>
+      <div class="metric"><div class="metric-label">Visibility</div><div class="metric-value" style="color:${vl.color};font-size:1rem">${vl.text}</div><div class="metric-sub">${vl.warn}</div></div>
+      <div class="metric"><div class="metric-label">Dew Point</div><div class="metric-value">${sDew!==undefined?Math.round(sDew)+'°':'—'}<span class="metric-unit">F</span></div><div class="metric-sub">${sDew!==undefined&&sDew>=30?'⚠️ Rime/fog risk':''}</div></div>
+    </div></div>`;
+  // Base
+  html+=`<div class="zone"><div class="zone-label"><span class="dot" style="background:${r.color}88"></span>Base · ${mToFt(r.base.elev).toLocaleString()}'</div>
+    <div class="metrics">
+      <div class="metric"><div class="metric-label">Temp</div><div class="metric-value">${Math.round(bC.temperature_2m)}°<span class="metric-unit">F</span></div><div class="metric-sub">Feels ${bWC}°</div></div>
+      <div class="metric"><div class="metric-label">Humidity</div><div class="metric-value">${Math.round(bC.relative_humidity_2m)}<span class="metric-unit">%</span></div><div class="metric-sub">Dew ${bDew!==undefined?Math.round(bDew)+'°':''}</div></div>
+      <div class="metric"><div class="metric-label">Hi / Lo</div><div class="metric-value" style="font-size:1rem"><span style="color:#f87171">${Math.round(s.daily.temperature_2m_max[0])}°</span>/<span style="color:#60a5fa">${Math.round(s.daily.temperature_2m_min[0])}°</span></div><div class="metric-sub">Summit today</div></div>
+    </div></div>`;
+  // Inversion / temp spread
+  html+=`<div class="zone"><div class="zone-label">${isInversion?'⚠️ Temperature Inversion':'🌡 Summit-Base Spread'}</div>
+    <div class="inversion-bar"><div class="inv-label">Summit</div><div class="inv-bar"><div class="inv-fill" style="width:${Math.max(10,Math.min(90,50-spread))}%;background:${r.color}">${Math.round(sC.temperature_2m)}°</div></div></div>
+    <div class="inversion-bar"><div class="inv-label">Base</div><div class="inv-bar"><div class="inv-fill" style="width:${Math.max(10,Math.min(90,50+spread))}%;background:${r.color}88">${Math.round(bC.temperature_2m)}°</div></div></div>
+    <div style="font-size:.6rem;color:${isInversion?'#f59e0b':'#4b5563'};margin-top:3px">${isInversion?'⚠️ Inversion: base is colder than summit by '+Math.abs(spread)+'°':'Normal lapse: '+spread+'° spread (base warmer)'}</div></div>`;
+  // Snow
+  html+=`<div class="zone"><div class="zone-label">❄️ Snowfall Forecast</div>
+    <div class="snowfall-row">
+      <div class="snow-card"><div class="snow-card-label">24h</div><div class="snow-card-value">${sn24.toFixed(1)}<span class="unit"> in</span></div></div>
+      <div class="snow-card"><div class="snow-card-label">48h</div><div class="snow-card-value">${sn48.toFixed(1)}<span class="unit"> in</span></div></div>
+      <div class="snow-card"><div class="snow-card-label">72h</div><div class="snow-card-value">${sn72.toFixed(1)}<span class="unit"> in</span></div></div>
+    </div>
+    <div class="snow-quality ${sq.cls}">${sq.emoji} ${sq.label} · ${sq.ratio} ratio</div></div>`;
+  // Freezing level
+  html+=`<div class="zone"><div class="zone-label">Freezing Level</div>
+    <div style="font-size:.85rem;font-weight:600;color:${fc}">${fFt?fFt.toLocaleString()+"'":"—"}</div>
+    <div class="freeze-bar" style="background:#1a1e35"><div class="freeze-fill" style="width:${fp}%;background:${fc}"></div></div>
+    <div style="display:flex;justify-content:space-between;font-size:.55rem;color:#374151;margin-top:2px"><span>Base</span><span>Summit</span></div></div>`;
+  // Sunrise/sunset
+  html+=`<div class="zone"><div class="zone-label">☀️ Daylight</div>
+    <div class="metrics" style="grid-template-columns:1fr 1fr">
+      <div class="metric"><div class="metric-label">Sunrise</div><div class="metric-value" style="font-size:1rem;color:#f59e0b">${sunrise?fmtTime(sunrise):'—'}</div></div>
+      <div class="metric"><div class="metric-label">Sunset</div><div class="metric-value" style="font-size:1rem;color:#f97316">${sunset?fmtTime(sunset):'—'}</div></div>
+    </div></div>`;
+  // Mini chart
+  html+=`<div class="zone"><div class="zone-label">🌡 48h Summit Temp</div><div class="mini-chart"><canvas id="mc-${id}"></canvas></div></div>`;
+  el.innerHTML=html;
+  // Chart
+  const idx=(s.hourly?.time||[]).findIndex(t=>t>=now);const st=idx>=0?idx:0;
+  const temps=(s.hourly?.temperature_2m||[]).slice(st,st+48);
+  const lbls=(s.hourly?.time||[]).slice(st,st+48).map(t=>new Date(t).toLocaleTimeString('en-US',{hour:'numeric',hour12:true}));
+  new Chart(document.getElementById('mc-'+id),{type:'line',data:{labels:lbls,datasets:[{data:temps,borderColor:r.color,backgroundColor:r.color+'22',borderWidth:2,pointRadius:0,tension:.3,fill:true},{data:Array(temps.length).fill(32),borderColor:'#22c55e44',borderWidth:1,borderDash:[4,4],pointRadius:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{mode:'index',intersect:false,callbacks:{label:c=>c.parsed.y+'°F'}}},scales:{x:{ticks:{color:'#374151',font:{size:9},maxTicksLimit:8,maxRotation:0},grid:{color:'#131627'}},y:{ticks:{color:'#374151',font:{size:9},callback:v=>v+'°'},grid:{color:'#1a1e35'}}}}});
+}
+
+function renderAQI(data){
+  const el=document.getElementById('aqi-content');
+  if(data.error){el.innerHTML=`<div style="color:#6b7280;font-size:.75rem">${data.error}</div>`;return;}
+  const aqi=data.current?.us_aqi||0;const pm25=data.current?.pm2_5||0;const pm10=data.current?.pm10||0;
+  const a=aqiLabel(aqi);
+  el.innerHTML=`<div class="metrics" style="grid-template-columns:repeat(3,1fr)">
+    <div class="metric"><div class="metric-label">AQI</div><div class="metric-value" style="color:${a.color}">${aqi}</div><div class="metric-sub" style="color:${a.color}">${a.text}</div></div>
+    <div class="metric"><div class="metric-label">PM2.5</div><div class="metric-value" style="font-size:1rem">${pm25.toFixed(1)}<span class="metric-unit"> µg/m³</span></div></div>
+    <div class="metric"><div class="metric-label">PM10</div><div class="metric-value" style="font-size:1rem">${pm10.toFixed(1)}<span class="metric-unit"> µg/m³</span></div></div>
+  </div>
+  <div class="aqi-bar"><div class="aqi-fill" style="width:${Math.min(100,aqi/3)}%;background:${a.color}"></div></div>`;
+}
+
+/* ── Charts ── */
+function renderSnowChart(){const ctx=document.getElementById('snowChart');if(snowChartInst)snowChartInst.destroy();const ds=[];['key','breck'].forEach(id=>{const d=allResortData[id];if(!d||d.error)return;const r=RESORTS[id];ds.push({label:r.name+' Summit',data:d.summit.daily.snowfall_sum.slice(0,7),backgroundColor:r.color+'88',borderColor:r.color,borderWidth:2,borderRadius:4});});const d=allResortData.key||allResortData.breck;const lbls=(d?.summit?.daily?.time||[]).slice(0,7).map(t=>new Date(t+'T12:00:00').toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'}));snowChartInst=new Chart(ctx,{type:'bar',data:{labels:lbls,datasets:ds},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{mode:'index',intersect:false,callbacks:{label:c=>c.dataset.label+': '+c.parsed.y.toFixed(1)+' in'}}},scales:{x:{ticks:{color:'#4b5563',font:{size:10}},grid:{color:'#131627'}},y:{ticks:{color:'#4b5563',font:{size:10},callback:v=>v+'"'},grid:{color:'#1a1e35'}}}}});}
+
+function renderTempCompChart(){const ctx=document.getElementById('tempCompChart');if(tempCompChartInst)tempCompChartInst.destroy();const ds=[];const now=new Date().toISOString().slice(0,13);let lbls=[];['key','breck'].forEach(id=>{const d=allResortData[id];if(!d||d.error)return;const r=RESORTS[id];const s=d.summit;const idx=(s.hourly?.time||[]).findIndex(t=>t>=now);const st=idx>=0?idx:0;const temps=(s.hourly?.temperature_2m||[]).slice(st,st+48);if(!lbls.length)lbls=(s.hourly?.time||[]).slice(st,st+48).map(t=>new Date(t).toLocaleTimeString('en-US',{hour:'numeric',hour12:true,weekday:'short'}));ds.push({label:r.name,data:temps,borderColor:r.color,backgroundColor:'transparent',borderWidth:2,pointRadius:0,tension:.3});});ds.push({label:'Freezing',data:Array(48).fill(32),borderColor:'#22c55e44',borderWidth:1,borderDash:[4,4],pointRadius:0});tempCompChartInst=new Chart(ctx,{type:'line',data:{labels:lbls,datasets:ds},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{mode:'index',intersect:false,callbacks:{label:c=>c.dataset.label+': '+c.parsed.y+'°F'}}},scales:{x:{ticks:{color:'#4b5563',font:{size:10},maxTicksLimit:12,maxRotation:0},grid:{color:'#131627'}},y:{ticks:{color:'#4b5563',font:{size:10},callback:v=>v+'°'},grid:{color:'#1a1e35'}}}}});}
+
+/* ── Main Fetch ── */
+async function fetchAll(){
+  const btn=document.getElementById('fetchBtn');btn.disabled=true;btn.textContent='Loading…';
+  setStatus('Fetching mountain conditions…');allResortData={};
+  const[keyR,breckR,aqiR]=await Promise.allSettled([fetchResortData('key'),fetchResortData('breck'),fetchAQI()]);
+  if(keyR.status==='fulfilled'){allResortData.key=keyR.value;renderResort('key',keyR.value);}else{renderResort('key',{error:'Failed to fetch'});}
+  if(breckR.status==='fulfilled'){allResortData.breck=breckR.value;renderResort('breck',breckR.value);}else{renderResort('breck',{error:'Failed to fetch'});}
+  if(aqiR.status==='fulfilled')renderAQI(aqiR.value);else renderAQI({error:'AQI unavailable'});
+  renderSnowChart();renderTempCompChart();
+  setStatus('Updated '+new Date().toLocaleTimeString('en-US',{timeZone:'America/Denver'})+' MT');
+  btn.disabled=false;btn.textContent='Refresh Conditions';
+}
+
+/* ── NWS Alerts ── */
+async function fetchNWSAlerts(){try{const r=await fetch('https://api.weather.gov/alerts/active?zone=COZ034,COZ035');const d=await r.json();return d.features||[];}catch(e){return[];}}
+function renderAlerts(a){const el=document.getElementById('alerts-content');if(!a.length){el.innerHTML='<div class="no-alerts">✅ No active alerts for Summit County</div>';return;}let h='';a.forEach((x,i)=>{const p=x.properties;const s=p.severity?.toLowerCase();const c=s==='extreme'?'extreme':s==='severe'?'severe':s==='moderate'?'moderate':s==='minor'?'minor':'unknown';h+=`<div class="alert-card ${c}"><div class="alert-event">${p.event}</div><div class="alert-meta">${p.severity||''}</div><div class="alert-desc" id="ad-${i}">${(p.description||'').replace(/\n/g,'<br>')}</div><button class="alert-toggle" onclick="document.getElementById('ad-${i}').classList.toggle('expanded');this.textContent=this.textContent==='Show more'?'Show less':'Show more'">Show more</button></div>`;});el.innerHTML=h;}
+
+/* ── SNOTEL ── */
+const SNOTEL=[{id:'415',name:'Grizzly Peak',elev:'11200',note:'Near Keystone'},{id:'485',name:'Hoosier Pass',elev:'11400',note:'Near Breck'},{id:'505',name:'Copper Mtn',elev:'10600',note:'I-70 corridor'},{id:'935',name:'Fremont Pass',elev:'11400',note:'Near Leadville'}];
+async function fetchSnotel(){const r=[];for(const s of SNOTEL){try{const u=`https://wcc.sc.egov.usda.gov/reportGenerator/view_csv/customSingleStationReport/daily/end_of_period/${s.id}:CO:SNTL|name/-1,0/SNWD::value,WTEQ::value,PREC::value,TOBS::value?fitToScreen=false`;const res=await fetch(u);const t=await res.text();const lines=t.split('\n').filter(l=>!l.startsWith('#')&&l.trim());if(lines.length>=2){const v=lines[lines.length-1].split(',');r.push({...s,date:v[0],snowDepth:parseFloat(v[1])||null,swe:parseFloat(v[2])||null,temp:parseFloat(v[4])||null,error:null});}else r.push({...s,error:'No data'});}catch(e){r.push({...s,error:e.message});}}return r;}
+function renderSnotel(stations){const el=document.getElementById('snotel-content');let h='<div class="snotel-grid">';stations.forEach(s=>{if(s.error){h+=`<div class="snotel-station"><div class="snotel-name">${s.name}</div><div class="snotel-info">${s.elev}' · ${s.note}</div><div style="color:#6b7280;font-size:.75rem">${s.error}</div></div>`;return;}h+=`<div class="snotel-station"><div class="snotel-name">📡 ${s.name}</div><div class="snotel-info">${s.elev}' · ${s.note} · ${s.date}</div><div class="snotel-metrics"><div class="snotel-metric"><div class="snotel-metric-value">${s.snowDepth!==null?s.snowDepth+'"':'—'}</div><div class="snotel-metric-label">Snow Depth</div></div><div class="snotel-metric"><div class="snotel-metric-value" style="color:#a78bfa">${s.swe!==null?s.swe+'"':'—'}</div><div class="snotel-metric-label">SWE</div></div><div class="snotel-metric"><div class="snotel-metric-value" style="color:#22c55e">${s.temp!==null?Math.round(s.temp)+'°F':'—'}</div><div class="snotel-metric-label">Temp</div></div></div></div>`;});h+='</div>';el.innerHTML=h;}
+async function fetchAlerts(){document.getElementById('alerts-content').innerHTML='<div class="loading-pulse" style="color:#4b5563">Loading…</div>';document.getElementById('snotel-content').innerHTML='<div class="loading-pulse" style="color:#4b5563">Loading…</div>';const[a,s]=await Promise.allSettled([fetchNWSAlerts(),fetchSnotel()]);renderAlerts(a.status==='fulfilled'?a.value:[]);renderSnotel(s.status==='fulfilled'?s.value:[]);}
+
+/* ── Init ── */
+renderLifts();fetchAll();
+</script>
+</body>
+</html>
