@@ -128,6 +128,9 @@ h1{font-size:1.4rem;font-weight:700;margin-bottom:2px;background:linear-gradient
 .lift-item{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid #1a1e3544;font-size:.75rem}
 .lift-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
 .lift-dot.closed{background:#ef4444}
+.lift-dot.open{background:#22c55e}
+.lift-dot.hold{background:#f59e0b}
+.lift-dot.unknown{background:#374151}
 .lift-name{flex:1;color:#9ca3af}
 .lift-type{font-size:.6rem;color:#374151}
 .trail-link{font-size:.7rem;color:#4f6ef7;text-decoration:none;padding:4px 12px;border:1px solid #4f6ef733;border-radius:6px;display:inline-block;margin:2px}
@@ -195,10 +198,9 @@ h1{font-size:1.4rem;font-weight:700;margin-bottom:2px;background:linear-gradient
 
 <!-- GROOMING -->
 <div class="tab-panel" id="tab-grooming">
-<button class="btn" onclick="loadTerrain()">Refresh Grooming</button>
 <div class="trail-resorts">
-  <div class="trail-resort"><div class="trail-header"><div class="trail-header-left"><span class="resort-icon">🏔</span><div class="resort-name" style="color:#60a5fa">Keystone</div></div><span class="groom-updated" id="key-groom-updated"></span></div><div id="key-grooming"><div class="loading-pulse" style="color:#4b5563;font-size:.8rem">Loading…</div></div></div>
-  <div class="trail-resort"><div class="trail-header"><div class="trail-header-left"><span class="resort-icon">⛰</span><div class="resort-name" style="color:#a78bfa">Breckenridge</div></div><span class="groom-updated" id="breck-groom-updated"></span></div><div id="breck-grooming"><div class="loading-pulse" style="color:#4b5563;font-size:.8rem">Loading…</div></div></div>
+  <div class="trail-resort"><div class="trail-header"><div class="trail-header-left"><span class="resort-icon">🏔</span><div class="resort-name" style="color:#60a5fa">Keystone</div></div></div><div id="key-grooming"><div class="loading-pulse" style="color:#4b5563;font-size:.8rem">Loading…</div></div></div>
+  <div class="trail-resort"><div class="trail-header"><div class="trail-header-left"><span class="resort-icon">⛰</span><div class="resort-name" style="color:#a78bfa">Breckenridge</div></div></div><div id="breck-grooming"><div class="loading-pulse" style="color:#4b5563;font-size:.8rem">Loading…</div></div></div>
 </div>
 </div>
 
@@ -546,62 +548,60 @@ function renderI70(items,err){
   el.innerHTML=h+links;
 }
 
-/* ── Grooming & live terrain (Vail Resorts terrain feed via your Worker) ──
-   The resort pages embed a status feed: every trail's difficulty, open and groomed flags, plus live lift status.
-   The Worker (?terrain=key|breck) fetches the page and returns just that feed. */
-const DIFF={Green:{i:'🟢',o:0},Blue:{i:'🔵',o:1},Black:{i:'⚫',o:2},DoubleBlack:{i:'⚫⚫',o:3},TerrainPark:{i:'🟧',o:4}};
-function feedDate(d){const m=String(d||'').match(/\d{10,}/);return m?new Date(+m[0]):null;}
-async function fetchTerrain(id){
-  const r=await fetch(PROXY+'?terrain='+id);
-  const j=await r.json().catch(()=>({error:'Bad response from Worker'}));
-  if(!r.ok||j.error)throw new Error(j.error||('HTTP '+r.status));
-  const trails=(j.GroomingAreas||[]).flatMap(a=>(a.Trails||[]).map(t=>({...t,area:a.Name})));
-  const lifts=j.Lifts||[];
-  return{trails,lifts,
-    open:trails.filter(t=>t.IsOpen),groomed:trails.filter(t=>t.IsGroomed),
-    liftsOpen:lifts.filter(l=>String(l.Status).toLowerCase()==='open'),updated:feedDate(j.Date)};
+/* ── Grooming (official report links) ──
+   Vail blocks automated access to its terrain/grooming data, so this tab links to the official reports. */
+const GROOMING_LINKS={
+  key:{status:'https://www.keystoneresort.com/the-mountain/mountain-conditions/terrain-and-lift-status.aspx',snow:'https://www.keystoneresort.com/the-mountain/mountain-conditions/snow-and-weather-report.aspx'},
+  breck:{status:'https://www.breckenridge.com/the-mountain/mountain-conditions/terrain-and-lift-status.aspx',snow:'https://www.breckenridge.com/the-mountain/mountain-conditions/snow-and-weather-report.aspx'},
+};
+function renderGroomingLinks(){
+  Object.entries(GROOMING_LINKS).forEach(([id,l])=>{
+    document.getElementById(id+'-grooming').innerHTML=
+      `<div class="groom-empty" style="text-align:left">Groomed runs are listed on the resort's Terrain & Lift Status page. Use its grooming filter to see last night's grooming.</div>
+       <div style="margin-top:.7rem"><a class="trail-link" href="${l.status}" target="_blank">🚜 Grooming & Terrain Status ↗</a><a class="trail-link" href="${l.snow}" target="_blank">❄️ Snow Report ↗</a></div>`;
+  });
 }
-function trailRow(t){
-  const d=DIFF[t.Difficulty]||{i:'▫️'};
-  const tags=(!t.IsOpen?'<span class="groom-tag closed">Closed</span>':'')+(t.IsTrailWork?'<span class="groom-tag work">Snowmaking/work</span>':'');
-  return `<div class="groom-trail"><span class="gt-icon">${d.i}</span><span class="gt-name">${esc(t.Name)}</span>${tags}</div>`;
+
+/* ── Live lift status (Liftie, via your Worker) ──
+   liftie.info is an open-source lift tracker. It doesn't allow direct browser requests, so the Worker relays it. */
+const LIFTIE={key:'keystone',breck:'breck'};
+const normName=s=>String(s).toLowerCase().replace(/superchair|super6|express|chair|lift/g,'').replace(/[^a-z0-9]/g,'');
+async function fetchLiftie(id){
+  const r=await fetch(PROXY+'?url='+encodeURIComponent('https://liftie.info/api/resort/'+LIFTIE[id]));
+  if(!r.ok)throw new Error('HTTP '+r.status);
+  const j=await r.json();
+  const status=j?.lifts?.status;
+  if(!status)throw new Error('No lift data');
+  if(!Object.keys(status).length)throw new Error('EMPTY'); // resort not reporting lifts yet (pre-season)
+  return{status,stats:j.lifts.stats||{},updated:j.timestamp?.lifts?new Date(j.timestamp.lifts):null};
 }
-function byArea(list){
-  const g={};list.forEach(t=>(g[t.area]=g[t.area]||[]).push(t));
-  return Object.entries(g).map(([a,ts])=>`<div class="groom-area">${esc(a)}</div>`+
-    ts.sort((x,y)=>((DIFF[x.Difficulty]?.o??9)-(DIFF[y.Difficulty]?.o??9))||x.Name.localeCompare(y.Name)).map(trailRow).join('')).join('');
-}
-function renderGrooming(id,data,err){
-  const el=document.getElementById(id+'-grooming'),up=document.getElementById(id+'-groom-updated');
-  if(err){el.innerHTML=`<div class="groom-empty">Couldn't load grooming: ${esc(err)}<br>Make sure the Worker update is deployed.</div>`;up.textContent='';return;}
-  up.textContent=data.updated?'Updated '+data.updated.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit',timeZone:'America/Denver'})+' MT':'';
-  const c=RESORTS[id].color;
-  let h=`<div class="groom-stats">
-    <div class="metric"><div class="metric-label">Groomed</div><div class="metric-value" style="color:${c}">${data.groomed.length}</div></div>
-    <div class="metric"><div class="metric-label">Trails open</div><div class="metric-value">${data.open.length}<span class="metric-unit">/${data.trails.length}</span></div></div>
-    <div class="metric"><div class="metric-label">Lifts open</div><div class="metric-value">${data.liftsOpen.length}<span class="metric-unit">/${data.lifts.length}</span></div></div>
-  </div>`;
-  if(!data.trails.length)h+='<div class="groom-empty">No trail data yet. The grooming report appears once the resort opens.</div>';
-  else if(!data.groomed.length)h+='<div class="groom-empty">No trails reported groomed right now.</div>';
-  else h+=byArea(data.groomed);
-  const openUngroomed=data.open.filter(t=>!t.IsGroomed);
-  if(openUngroomed.length)h+=`<details class="groom-more"><summary>Open, not groomed (${openUngroomed.length})</summary>${byArea(openUngroomed)}</details>`;
-  el.innerHTML=h;
-}
-// Live counts + "Open" badge on the Trails & Lifts tab when the feed shows terrain open
-function applyLiveTerrain(id,data){
-  const liftsEl=document.getElementById(id+'-lifts-open'),trailsEl=document.getElementById(id+'-trails-open');
-  liftsEl.textContent=data.liftsOpen.length;liftsEl.nextElementSibling.textContent='/'+data.lifts.length;
-  if(data.trails.length){trailsEl.textContent=data.open.length;trailsEl.nextElementSibling.textContent='/'+data.trails.length;}
-  if(data.open.length||data.liftsOpen.length){
+function applyLiftie(id,data){
+  const byName=new Map(Object.entries(data.status).map(([n,s])=>[normName(n),s]));
+  // color each lift dot on the Trails & Lifts tab
+  document.querySelectorAll(`#${id}-lifts .lift-item`).forEach(row=>{
+    const dot=row.querySelector('.lift-dot'),name=row.querySelector('.lift-name').textContent;
+    const s=byName.get(normName(name));
+    dot.className='lift-dot '+(s==='open'?'open':s==='hold'?'hold':s?'closed':'unknown');
+    dot.title=s?s:'Not reported';
+  });
+  const open=data.stats.open??Object.values(data.status).filter(s=>s==='open').length;
+  const total=Object.keys(data.status).length;
+  const liftsEl=document.getElementById(id+'-lifts-open');
+  liftsEl.textContent=open;liftsEl.nextElementSibling.textContent='/'+total;
+  if(open>0){
     const b=document.getElementById(id+'-badge');b.className='season-badge open';b.textContent='Open';
-    document.getElementById(id+'-note').textContent=`Live: ${data.liftsOpen.length} lift${data.liftsOpen.length===1?'':'s'} · ${data.open.length} trail${data.open.length===1?'':'s'} open`;
+    const t=data.updated?' · updated '+data.updated.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit',timeZone:'America/Denver'})+' MT':'';
+    document.getElementById(id+'-note').textContent=`Live: ${open} of ${total} lifts open${t}`;
   }
 }
-async function loadTerrain(){
-  await Promise.all(['key','breck'].map(async id=>{
-    try{const d=await fetchTerrain(id);renderGrooming(id,d);applyLiveTerrain(id,d);}
-    catch(e){renderGrooming(id,null,e.message);}
+async function loadLifts(){
+  await Promise.all(Object.keys(LIFTIE).map(async id=>{
+    try{applyLiftie(id,await fetchLiftie(id));}
+    catch(e){
+      if(e.message==='EMPTY')return; // keep the season badge/note as-is
+      const n=document.getElementById(id+'-note');
+      if(n&&!n.textContent.startsWith('Live'))n.textContent+=(n.textContent?' · ':'')+'Live lift status unavailable';
+    }
   }));
 }
 
@@ -616,7 +616,7 @@ async function fetchAll(){
   renderResort('key',allResortData.key);
   renderResort('breck',allResortData.breck);
   renderAQI(aqiR.status==='fulfilled'?aqiR.value:{error:'AQI unavailable'});
-  renderSnowChart();renderTempCompChart();
+  renderSnowChart();renderTempCompChart();loadLifts();
   setStatus('Updated '+new Date().toLocaleTimeString('en-US',{timeZone:'America/Denver'})+' MT');
   btn.disabled=false;btn.textContent='Refresh Conditions';
 }
@@ -729,7 +729,7 @@ async function fetchAlerts(){
 }
 
 /* ── Init ── */
-renderLifts();renderSeason();fetchAll();loadTerrain();
+renderLifts();renderSeason();renderGroomingLinks();fetchAll();loadLifts();
 </script>
 </body>
 </html>
