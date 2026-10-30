@@ -154,7 +154,7 @@ h1{font-size:1.4rem;font-weight:700;margin-bottom:2px;background:linear-gradient
     <div class="trail-summary"><div class="trail-stat"><div class="trail-stat-value" style="color:#60a5fa"><span id="key-lifts-open">0</span><span class="metric-unit">/21</span></div><div class="trail-stat-label">Lifts</div></div><div class="trail-stat"><div class="trail-stat-value" style="color:#60a5fa"><span id="key-trails-open">0</span><span class="metric-unit">/140</span></div><div class="trail-stat-label">Trails</div></div></div>
     <div class="diff-row"><div class="diff-icon">🟢</div><div class="diff-label">Beginner</div><div class="diff-bar-bg"><div class="diff-bar-fill" style="width:12%;background:#22c55e"></div></div><div class="diff-count">12%</div></div>
     <div class="diff-row"><div class="diff-icon">🔵</div><div class="diff-label">Intermediate</div><div class="diff-bar-bg"><div class="diff-bar-fill" style="width:39%;background:#3b82f6"></div></div><div class="diff-count">39%</div></div>
-    <div class="diff-row"><div class="diff-icon">⚫</div><div class="diff-label">Advanced</div><div class="diff-bar-bg"><div class="diff-bar-fill" style="width:49%;background:#1f2937"></div></div><div class="diff-count">49%</div></div>
+    <div class="diff-row"><div class="diff-icon">⚫</div><div class="diff-label">Advanced</div><div class="diff-bar-bg"><div class="diff-bar-fill" style="width:49%;background:#000;box-shadow:inset 0 0 0 1.5px #e5e7eb"></div></div><div class="diff-count">49%</div></div>
     <div class="lift-section-label">Lifts</div><div id="key-lifts"></div>
     <div style="margin-top:.8rem"><a class="trail-link" href="https://www.keystoneresort.com/the-mountain/mountain-conditions/terrain-and-lift-status.aspx" target="_blank">Live Status ↗</a><a class="trail-link" href="https://www.keystoneresort.com/the-mountain/mountain-conditions/snow-and-weather-report.aspx" target="_blank">Snow Report ↗</a></div>
   </div>
@@ -163,7 +163,7 @@ h1{font-size:1.4rem;font-weight:700;margin-bottom:2px;background:linear-gradient
     <div class="trail-summary"><div class="trail-stat"><div class="trail-stat-value" style="color:#a78bfa"><span id="breck-lifts-open">0</span><span class="metric-unit">/35</span></div><div class="trail-stat-label">Lifts</div></div><div class="trail-stat"><div class="trail-stat-value" style="color:#a78bfa"><span id="breck-trails-open">0</span><span class="metric-unit">/187</span></div><div class="trail-stat-label">Trails</div></div></div>
     <div class="diff-row"><div class="diff-icon">🟢</div><div class="diff-label">Beginner</div><div class="diff-bar-bg"><div class="diff-bar-fill" style="width:11%;background:#22c55e"></div></div><div class="diff-count">11%</div></div>
     <div class="diff-row"><div class="diff-icon">🔵</div><div class="diff-label">Intermediate</div><div class="diff-bar-bg"><div class="diff-bar-fill" style="width:31%;background:#3b82f6"></div></div><div class="diff-count">31%</div></div>
-    <div class="diff-row"><div class="diff-icon">⚫</div><div class="diff-label">Advanced</div><div class="diff-bar-bg"><div class="diff-bar-fill" style="width:24%;background:#1f2937"></div></div><div class="diff-count">24%</div></div>
+    <div class="diff-row"><div class="diff-icon">⚫</div><div class="diff-label">Advanced</div><div class="diff-bar-bg"><div class="diff-bar-fill" style="width:24%;background:#000;box-shadow:inset 0 0 0 1.5px #e5e7eb"></div></div><div class="diff-count">24%</div></div>
     <div class="diff-row"><div class="diff-icon">⚫⚫</div><div class="diff-label">Expert</div><div class="diff-bar-bg"><div class="diff-bar-fill" style="width:34%;background:#7c3aed"></div></div><div class="diff-count">34%</div></div>
     <div class="lift-section-label">Lifts</div><div id="breck-lifts"></div>
     <div style="margin-top:.8rem"><a class="trail-link" href="https://www.breckenridge.com/the-mountain/mountain-conditions/terrain-and-lift-status.aspx" target="_blank">Live Status ↗</a><a class="trail-link" href="https://www.breckenridge.com/the-mountain/mountain-conditions/snow-and-weather-report.aspx" target="_blank">Snow Report ↗</a></div>
@@ -535,6 +535,7 @@ function renderSeason(){
 /* ── SNOTEL ──
    Station IDs verified against the NRCS Colorado station list. */
 const SNOTEL=[
+  {id:'602',name:'Loveland Basin',note:'Loveland Pass'},
   {id:'505',name:'Grizzly Peak',note:'Near Keystone'},
   {id:'935',name:'Jackwhacker Gulch',note:'11,053\''},
   {id:'531',name:'Hoosier Pass',note:'Near Breck'},
