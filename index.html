@@ -265,8 +265,8 @@ function renderLifts(){
 
 /* ── Config ── */
 const RESORTS={
-  key:{name:'Keystone',color:'#60a5fa',base:{lat:39.6069,lon:-105.9522,elev:2828},summit:{lat:39.5817,lon:-105.9397,elev:3782}},
-  breck:{name:'Breckenridge',color:'#a78bfa',base:{lat:39.4817,lon:-106.0384,elev:2926},summit:{lat:39.4633,lon:-106.0673,elev:3962}},
+  key:{name:'Keystone',color:'#60a5fa',base:{lat:39.6069,lon:-105.9522,elev:2828,ft:9280},summit:{lat:39.5817,lon:-105.9397,elev:3782,ft:12408}},
+  breck:{name:'Breckenridge',color:'#a78bfa',base:{lat:39.4817,lon:-106.0384,elev:2926,ft:9600},summit:{lat:39.4633,lon:-106.0673,elev:3962,ft:12998}},
 };
 let allResortData={},snowChartInst=null,tempCompChartInst=null;
 const miniCharts={}; // FIX 6: track mini charts so they can be destroyed on refresh
@@ -323,12 +323,12 @@ function uvLabel(uv){
   if(uv<=10)return{text:'Very High',color:'#ef4444'};
   return{text:'Extreme',color:'#7c3aed'};
 }
-function visLabel(m){
-  const mi=m/1609.34;
+function visLabel(ft){ // Open-Meteo returns visibility in feet when imperial units are requested
+  const mi=ft/5280;
   if(mi>=10)return{text:Math.round(mi)+' mi',color:'#22c55e',warn:''};
   if(mi>=5)return{text:mi.toFixed(1)+' mi',color:'#f59e0b',warn:'Reduced'};
   if(mi>=1)return{text:mi.toFixed(1)+' mi',color:'#f97316',warn:'Low'};
-  return{text:Math.round(m)+' m',color:'#ef4444',warn:'⚠️ Poor'};
+  return{text:Math.round(ft).toLocaleString()+' ft',color:'#ef4444',warn:'⚠️ Poor'};
 }
 function aqiLabel(aqi){
   if(aqi<=50)return{text:'Good',color:'#22c55e'};
@@ -366,12 +366,12 @@ function renderResort(id,data){
   if(data.error){el.innerHTML=`<div style="color:#ef4444">${data.error}</div>`;return;}
   const b=data.base,s=data.summit,bC=b.current,sC=s.current;
   const hIdx=curIdx(s); // FIX 1
-  const fl=s.hourly?.freezinglevel_height?.[hIdx];const fFt=fl?mToFt(fl):null;
+  const fl=s.hourly?.freezinglevel_height?.[hIdx];const fFt=fl?Math.round(fl):null; // already in feet (imperial units requested)
   // FIX 3: true rolling 24/48/72h totals from the current hour
   const sn24=sumNext(s.hourly?.snowfall,hIdx,24);
   const sn48=sumNext(s.hourly?.snowfall,hIdx,48);
   const sn72=sumNext(s.hourly?.snowfall,hIdx,72);
-  const bE=r.base.elev*3.281,sE=r.summit.elev*3.281;
+  const bE=r.base.ft,sE=r.summit.ft;
   const fp=fFt?Math.max(0,Math.min(100,((fFt-bE)/(sE-bE))*100)):0;
   const fc=fp>80?'#ef4444':fp>50?'#f59e0b':'#22c55e';
   const sWC=windChill(sC.temperature_2m,sC.wind_speed_10m);
@@ -388,7 +388,7 @@ function renderResort(id,data){
 
   let html='';
   if(isPowder){html+=`<div class="powder-alert"><div class="pa-icon">🎿</div><div><div class="pa-text">POWDER DAY! ${sn24.toFixed(1)}" in the next 24h</div><div class="pa-sub">${sn48.toFixed(1)}" over 48h · ${sn72.toFixed(1)}" over 72h</div></div></div>`;}
-  html+=`<div class="zone"><div class="zone-label"><span class="dot" style="background:${r.color}"></span>Summit · ${mToFt(r.summit.elev).toLocaleString()}'</div>
+  html+=`<div class="zone"><div class="zone-label"><span class="dot" style="background:${r.color}"></span>Summit · ${r.summit.ft.toLocaleString()}'</div>
     <div class="metrics">
       <div class="metric"><div class="metric-label">Temp</div><div class="metric-value">${Math.round(sC.temperature_2m)}°<span class="metric-unit">F</span></div><div class="metric-sub">${WMO[sC.weather_code]||'—'}</div></div>
       <div class="metric"><div class="metric-label">Feels Like</div><div class="metric-value" style="color:${sWC<=0?'#60a5fa':sWC<=20?'#38bdf8':'#e8eaf0'}">${sWC}°<span class="metric-unit">F</span></div><div class="metric-sub">Wind chill</div></div>
@@ -397,7 +397,7 @@ function renderResort(id,data){
       <div class="metric"><div class="metric-label">Visibility</div><div class="metric-value" style="color:${vl.color};font-size:1rem">${vl.text}</div><div class="metric-sub">${vl.warn}</div></div>
       <div class="metric"><div class="metric-label">Dew Point</div><div class="metric-value">${sDew!==undefined?Math.round(sDew)+'°':'—'}<span class="metric-unit">F</span></div><div class="metric-sub">${sDew!==undefined&&sDew>=30?'⚠️ Rime/fog risk':''}</div></div>
     </div></div>`;
-  html+=`<div class="zone"><div class="zone-label"><span class="dot" style="background:${r.color}88"></span>Base · ${mToFt(r.base.elev).toLocaleString()}'</div>
+  html+=`<div class="zone"><div class="zone-label"><span class="dot" style="background:${r.color}88"></span>Base · ${r.base.ft.toLocaleString()}'</div>
     <div class="metrics">
       <div class="metric"><div class="metric-label">Temp</div><div class="metric-value">${Math.round(bC.temperature_2m)}°<span class="metric-unit">F</span></div><div class="metric-sub">Feels ${bWC}°</div></div>
       <div class="metric"><div class="metric-label">Humidity</div><div class="metric-value">${Math.round(bC.relative_humidity_2m)}<span class="metric-unit">%</span></div><div class="metric-sub">Dew ${bDew!==undefined?Math.round(bDew)+'°':''}</div></div>
