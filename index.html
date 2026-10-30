@@ -62,6 +62,15 @@ h1{font-size:1.4rem;font-weight:700;margin-bottom:2px;background:linear-gradient
 .inv-label{font-size:.65rem;color:#6b7280;width:50px}
 .inv-bar{flex:1;height:14px;background:#1a1e35;border-radius:4px;overflow:hidden;display:flex}
 .inv-fill{height:100%;display:flex;align-items:center;justify-content:center;font-size:.55rem;font-weight:600;color:#fff;min-width:30px}
+.i70-status{display:inline-block;font-size:.68rem;font-weight:600;padding:3px 10px;border-radius:10px;margin-bottom:.6rem}
+.i70-status.ok{background:#22c55e22;color:#22c55e;border:1px solid #22c55e44}
+.i70-status.bad{background:#ef444422;color:#ef4444;border:1px solid #ef444444}
+.i70-item{background:#0f1221;border:1px solid #1a1e35;border-left:3px solid #6b7280;border-radius:6px;padding:.5rem .6rem;margin-bottom:.4rem}
+.i70-item.r0{border-left-color:#ef4444}.i70-item.r1{border-left-color:#f97316}.i70-item.r2{border-left-color:#f59e0b}.i70-item.r3{border-left-color:#60a5fa}.i70-item.r4{border-left-color:#4b5563}
+.i70-head{font-size:.62rem;color:#6b7280;text-transform:uppercase;letter-spacing:.5px}
+.i70-title{font-size:.75rem;color:#e8eaf0;margin-top:2px}
+.i70-brief{font-size:.65rem;color:#6b7280;margin-top:1px}
+.i70-work summary{font-size:.7rem;color:#9ca3af;cursor:pointer;margin:.4rem 0}
 .aqi-bar{height:8px;border-radius:4px;margin-top:4px;overflow:hidden;background:#1a1e35}
 .aqi-fill{height:100%;border-radius:4px;transition:width .5s}
 .alert-card{background:#0f1221;border-left:3px solid;border-radius:6px;padding:.8rem;margin-bottom:.6rem}
@@ -132,7 +141,7 @@ h1{font-size:1.4rem;font-weight:700;margin-bottom:2px;background:linear-gradient
 </div>
 <div class="resorts">
   <div class="shared-section" style="margin-bottom:0"><div class="shared-title">🌬 Air Quality</div><div id="aqi-content"><div class="loading-pulse" style="color:#4b5563;font-size:.8rem">Loading…</div></div></div>
-  <div class="shared-section" style="margin-bottom:0"><div class="shared-title">🛣 I-70 Corridor</div><div style="font-size:.75rem;color:#6b7280">Live conditions from CDOT</div><div style="margin-top:.5rem"><a class="trail-link" href="https://www.cotrip.org/map#/roadConditions?region=mountains&route=I-70" target="_blank">COtrip Live Map ↗</a><a class="trail-link" href="https://www.codot.gov/travel/i70mountain" target="_blank">CDOT I-70 ↗</a></div></div>
+  <div class="shared-section" style="margin-bottom:0"><div class="shared-title">🛣 I-70 · Denver Airport → Vail</div><div id="i70-content"><div class="loading-pulse" style="color:#4b5563;font-size:.8rem">Loading…</div></div></div>
 </div>
 <div class="shared-section" style="margin-top:1rem">
   <div class="shared-title">❄️ 7-Day Snowfall Forecast</div>
@@ -463,11 +472,64 @@ function renderTempCompChart(){
   tempCompChartInst=new Chart(ctx,{type:'line',data:{labels:lbls,datasets:ds},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{mode:'index',intersect:false,callbacks:{label:c=>c.dataset.label+': '+c.parsed.y+'°F'}}},scales:{x:{ticks:{color:'#4b5563',font:{size:10},maxTicksLimit:12,maxRotation:0},grid:{color:'#131627'}},y:{ticks:{color:'#4b5563',font:{size:10},callback:v=>v+'°'},grid:{color:'#1a1e35'}}}}});
 }
 
+/* ── I-70 Corridor (CDOT COtrip feed) ──
+   Same public feed the cotrip.org map uses; it allows browser requests (CORS: *).
+   Filtered to I-70 by mile marker: West Vail (~MP 173) → Peña Blvd / Denver airport (~MP 284). */
+const I70={from:173,to:285};
+const COTRIP='https://api-511x-co.carsprogram.org/events/map-features?eventClassifications=';
+const I70_FEEDS=[
+  {key:'roadClosures',label:'Closure',icon:'⛔',rank:0},
+  {key:'chainLaws',label:'Chain / Traction Law',icon:'⛓',rank:1},
+  {key:'roadReports',label:'Incident',icon:'⚠️',rank:2},
+  {key:'winterDriving',label:'Road Conditions',icon:'❄️',rank:3},
+  {key:'roadWork&maxBeginDateOffset=7200000',label:'Construction',icon:'🚧',rank:4}, // active now or within 2h, like the COtrip map
+];
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+async function fetchI70(){
+  const res=await Promise.allSettled(I70_FEEDS.map(f=>fetch(COTRIP+f.key).then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.json();})));
+  if(res.every(r=>r.status==='rejected'))throw new Error(res[0].reason?.message||'COtrip unreachable');
+  const byId=new Map();
+  res.forEach((r,i)=>{
+    if(r.status!=='fulfilled')return;
+    const feed=I70_FEEDS[i];
+    (r.value.features||[]).forEach(f=>{
+      const p=f.properties||{},loc=p.eventReport?.location||{};
+      if(loc.routeDesignator!=='I-70')return;
+      const a=num(loc.primaryPoint?.linearReference),b=num(loc.secondaryPoint?.linearReference);
+      if(a===null&&b===null)return;
+      const lo=Math.min(a??b,b??a),hi=Math.max(a??b,b??a);
+      if(hi<I70.from||lo>I70.to)return; // outside Denver airport → Vail
+      const prev=byId.get(p.id);
+      if(prev&&prev.rank<=feed.rank)return; // same event in two feeds: keep the more serious one
+      byId.set(p.id,{...feed,id:p.id,title:p.title||p.tooltip||'',brief:p.eventReport?.eventDescription?.descriptionBrief||'',lo,hi,updated:p.updated});
+    });
+  });
+  return[...byId.values()].sort((x,y)=>x.rank-y.rank||y.lo-x.lo);
+}
+function renderI70(items,err){
+  const el=document.getElementById('i70-content');
+  const links=`<div style="margin-top:.6rem"><a class="trail-link" href="https://www.cotrip.org/?layers=closures%2Ctraffic_incidents%2Croad_conditions%2Cchain%2Ftraction_law&lat=39.68&lng=-105.55&zoom=9.00" target="_blank">COtrip Map ↗</a><a class="trail-link" href="https://www.codot.gov/travel/i70mountain" target="_blank">CDOT I-70 ↗</a></div>`;
+  if(err){el.innerHTML=`<div style="color:#6b7280;font-size:.75rem">Couldn't reach COtrip: ${esc(err)}</div>`+links;return;}
+  const row=i=>{
+    const mp=Math.round(i.lo)===Math.round(i.hi)?`MP ${Math.round(i.lo)}`:`MP ${Math.round(i.lo)}–${Math.round(i.hi)}`;
+    const upd=i.updated?' · '+new Date(i.updated).toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit',timeZone:'America/Denver'}):'';
+    return `<div class="i70-item r${i.rank}"><div class="i70-head">${i.icon} ${i.label} · ${mp}${upd}</div><div class="i70-title">${esc(i.title)}</div>${i.brief?`<div class="i70-brief">${esc(i.brief)}</div>`:''}</div>`;
+  };
+  const serious=items.filter(i=>i.rank<=2),cond=items.filter(i=>i.rank===3),work=items.filter(i=>i.rank===4);
+  let h=serious.length
+    ?`<div class="i70-status bad">${serious.length} active alert${serious.length>1?'s':''}</div>`
+    :`<div class="i70-status ok">✅ No closures, incidents or chain laws</div>`;
+  h+=serious.map(row).join('')+cond.map(row).join('');
+  if(work.length)h+=`<details class="i70-work"><summary>🚧 ${work.length} construction zone${work.length>1?'s':''}</summary>${work.map(row).join('')}</details>`;
+  el.innerHTML=h+links;
+}
+
 /* ── Main Fetch ── */
 async function fetchAll(){
   const btn=document.getElementById('fetchBtn');btn.disabled=true;btn.textContent='Loading…';
   setStatus('Fetching mountain conditions…');allResortData={};
-  const[keyR,breckR,aqiR]=await Promise.allSettled([fetchResortData('key'),fetchResortData('breck'),fetchAQI()]);
+  const[keyR,breckR,aqiR,i70R]=await Promise.allSettled([fetchResortData('key'),fetchResortData('breck'),fetchAQI(),fetchI70()]);
+  if(i70R.status==='fulfilled')renderI70(i70R.value);else renderI70([],i70R.reason?.message||'unknown error');
   allResortData.key=keyR.status==='fulfilled'?keyR.value:{error:'Failed to fetch'};
   allResortData.breck=breckR.status==='fulfilled'?breckR.value:{error:'Failed to fetch'};
   renderResort('key',allResortData.key);
