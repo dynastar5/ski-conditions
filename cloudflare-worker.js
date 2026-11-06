@@ -2,10 +2,9 @@
 //  - POST /            → forwards to the Windy Point Forecast API (unchanged behavior)
 //  - GET  /?url=<url>  → fetches an allowlisted URL and adds CORS headers
 //        wcc.sc.egov.usda.gov → NRCS SNOTEL fallback
-//        liftie.info          → live lift status (open-source lift tracker)
 
 const WINDY_URL = "https://api.windy.com/api/point-forecast/v2";
-const ALLOWED_HOSTS = ["wcc.sc.egov.usda.gov", "liftie.info"]; // only these hosts can be proxied via ?url=
+const ALLOWED_HOSTS = ["wcc.sc.egov.usda.gov"]; // only these hosts can be proxied via ?url=
 
 const CORS = {
   "Access-Control-Allow-Origin": "*",

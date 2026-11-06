@@ -6,7 +6,7 @@ Live at https://dynastar5.github.io/ski-conditions/
 ## What's in here
 
 - `index.html`: the dashboard, published by GitHub Pages from `main`.
-- `cloudflare-worker.js`: the Cloudflare Worker (`windy-proxy`) the dashboard uses to fetch data that browsers can't load directly (SNOTEL fallback, Liftie lift status, Windy).
+- `cloudflare-worker.js`: the Cloudflare Worker (`windy-proxy`) the dashboard uses to fetch data that browsers can't load directly (SNOTEL fallback, Windy).
 - `wrangler.toml`: Cloudflare's config for deploying that Worker from this repo.
 
 ## Deploying the Worker

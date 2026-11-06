@@ -180,7 +180,7 @@ h1{font-size:1.4rem;font-weight:700;margin-bottom:2px;background:linear-gradient
     <div class="diff-row"><div class="diff-icon">🟢</div><div class="diff-label">Beginner</div><div class="diff-bar-bg"><div class="diff-bar-fill" style="width:12%;background:#22c55e"></div></div><div class="diff-count">12%</div></div>
     <div class="diff-row"><div class="diff-icon">🔵</div><div class="diff-label">Intermediate</div><div class="diff-bar-bg"><div class="diff-bar-fill" style="width:39%;background:#3b82f6"></div></div><div class="diff-count">39%</div></div>
     <div class="diff-row"><div class="diff-icon">⚫</div><div class="diff-label">Advanced</div><div class="diff-bar-bg"><div class="diff-bar-fill" style="width:49%;background:#000;box-shadow:inset 0 0 0 1.5px #e5e7eb"></div></div><div class="diff-count">49%</div></div>
-    <div class="lift-section-label">Lifts</div><div id="key-lifts"></div>
+    <div class="lift-section-label">Lifts · live status on the resort site</div><div id="key-lifts"></div>
     <div style="margin-top:.8rem"><a class="trail-link" href="https://www.keystoneresort.com/the-mountain/mountain-conditions/terrain-and-lift-status.aspx" target="_blank">Live Status ↗</a><a class="trail-link" href="https://www.keystoneresort.com/the-mountain/mountain-conditions/snow-and-weather-report.aspx" target="_blank">Snow Report ↗</a></div>
   </div>
   <div class="trail-resort"><div class="trail-header"><div class="trail-header-left"><span class="resort-icon">⛰</span><div class="resort-name" style="color:#a78bfa">Breckenridge</div></div><span class="season-badge" id="breck-badge"></span></div>
@@ -190,7 +190,7 @@ h1{font-size:1.4rem;font-weight:700;margin-bottom:2px;background:linear-gradient
     <div class="diff-row"><div class="diff-icon">🔵</div><div class="diff-label">Intermediate</div><div class="diff-bar-bg"><div class="diff-bar-fill" style="width:31%;background:#3b82f6"></div></div><div class="diff-count">31%</div></div>
     <div class="diff-row"><div class="diff-icon">⚫</div><div class="diff-label">Advanced</div><div class="diff-bar-bg"><div class="diff-bar-fill" style="width:24%;background:#000;box-shadow:inset 0 0 0 1.5px #e5e7eb"></div></div><div class="diff-count">24%</div></div>
     <div class="diff-row"><div class="diff-icon">⚫⚫</div><div class="diff-label">Expert</div><div class="diff-bar-bg"><div class="diff-bar-fill" style="width:34%;background:#7c3aed"></div></div><div class="diff-count">34%</div></div>
-    <div class="lift-section-label">Lifts</div><div id="breck-lifts"></div>
+    <div class="lift-section-label">Lifts · live status on the resort site</div><div id="breck-lifts"></div>
     <div style="margin-top:.8rem"><a class="trail-link" href="https://www.breckenridge.com/the-mountain/mountain-conditions/terrain-and-lift-status.aspx" target="_blank">Live Status ↗</a><a class="trail-link" href="https://www.breckenridge.com/the-mountain/mountain-conditions/snow-and-weather-report.aspx" target="_blank">Snow Report ↗</a></div>
   </div>
 </div>
@@ -280,7 +280,7 @@ function renderLifts(){
     let h='';
     Object.entries(peaks).forEach(([p,ls])=>{
       h+=`<div class="lift-section-label" style="margin-top:.4rem">${p}</div>`;
-      ls.forEach(l=>{h+=`<div class="lift-item"><span class="lift-dot closed"></span><span class="lift-name">${l.name}</span><span class="lift-type">${l.type}</span></div>`;});
+      ls.forEach(l=>{h+=`<div class="lift-item"><span class="lift-dot unknown"></span><span class="lift-name">${l.name}</span><span class="lift-type">${l.type}</span></div>`;});
     });
     h+=`<div style="font-size:.62rem;color:#4b5563;margin-top:.5rem">${SURFACE_NOTE[id]}</div>`;
     document.getElementById(id+'-lifts').innerHTML=h;
@@ -562,49 +562,6 @@ function renderGroomingLinks(){
   });
 }
 
-/* ── Live lift status (Liftie, via your Worker) ──
-   liftie.info is an open-source lift tracker. It doesn't allow direct browser requests, so the Worker relays it. */
-const LIFTIE={key:'keystone',breck:'breck'};
-const normName=s=>String(s).toLowerCase().replace(/superchair|super6|express|chair|lift/g,'').replace(/[^a-z0-9]/g,'');
-async function fetchLiftie(id){
-  const r=await fetch(PROXY+'?url='+encodeURIComponent('https://liftie.info/api/resort/'+LIFTIE[id]));
-  if(!r.ok)throw new Error('HTTP '+r.status);
-  const j=await r.json();
-  const status=j?.lifts?.status;
-  if(!status)throw new Error('No lift data');
-  if(!Object.keys(status).length)throw new Error('EMPTY'); // resort not reporting lifts yet (pre-season)
-  return{status,stats:j.lifts.stats||{},updated:j.timestamp?.lifts?new Date(j.timestamp.lifts):null};
-}
-function applyLiftie(id,data){
-  const byName=new Map(Object.entries(data.status).map(([n,s])=>[normName(n),s]));
-  // color each lift dot on the Trails & Lifts tab
-  document.querySelectorAll(`#${id}-lifts .lift-item`).forEach(row=>{
-    const dot=row.querySelector('.lift-dot'),name=row.querySelector('.lift-name').textContent;
-    const s=byName.get(normName(name));
-    dot.className='lift-dot '+(s==='open'?'open':s==='hold'?'hold':s?'closed':'unknown');
-    dot.title=s?s:'Not reported';
-  });
-  const open=data.stats.open??Object.values(data.status).filter(s=>s==='open').length;
-  const total=Object.keys(data.status).length;
-  const liftsEl=document.getElementById(id+'-lifts-open');
-  liftsEl.textContent=open;liftsEl.nextElementSibling.textContent='/'+total;
-  if(open>0){
-    const b=document.getElementById(id+'-badge');b.className='season-badge open';b.textContent='Open';
-    const t=data.updated?' · updated '+data.updated.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit',timeZone:'America/Denver'})+' MT':'';
-    document.getElementById(id+'-note').textContent=`Live: ${open} of ${total} lifts open${t}`;
-  }
-}
-async function loadLifts(){
-  await Promise.all(Object.keys(LIFTIE).map(async id=>{
-    try{applyLiftie(id,await fetchLiftie(id));}
-    catch(e){
-      if(e.message==='EMPTY')return; // keep the season badge/note as-is
-      const n=document.getElementById(id+'-note');
-      if(n&&!n.textContent.startsWith('Live'))n.textContent+=(n.textContent?' · ':'')+'Live lift status unavailable';
-    }
-  }));
-}
-
 /* ── Main Fetch ── */
 async function fetchAll(){
   const btn=document.getElementById('fetchBtn');btn.disabled=true;btn.textContent='Loading…';
@@ -616,7 +573,7 @@ async function fetchAll(){
   renderResort('key',allResortData.key);
   renderResort('breck',allResortData.breck);
   renderAQI(aqiR.status==='fulfilled'?aqiR.value:{error:'AQI unavailable'});
-  renderSnowChart();renderTempCompChart();loadLifts();
+  renderSnowChart();renderTempCompChart();
   setStatus('Updated '+new Date().toLocaleTimeString('en-US',{timeZone:'America/Denver'})+' MT');
   btn.disabled=false;btn.textContent='Refresh Conditions';
 }
@@ -729,7 +686,7 @@ async function fetchAlerts(){
 }
 
 /* ── Init ── */
-renderLifts();renderSeason();renderGroomingLinks();fetchAll();loadLifts();
+renderLifts();renderSeason();renderGroomingLinks();fetchAll();
 </script>
 </body>
 </html>
