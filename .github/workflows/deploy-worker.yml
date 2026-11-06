@@ -1,0 +1,38 @@
+# Deploys cloudflare-worker.js to the existing `windy-proxy` Cloudflare Worker.
+# Runs when the Worker code or its config changes on main, or manually from the Actions tab.
+#
+# Needs two repository secrets (Settings → Secrets and variables → Actions):
+#   CLOUDFLARE_API_TOKEN   – token from windy-proxy → Settings → Builds → "Create token"
+#   CLOUDFLARE_ACCOUNT_ID  – the long ID in your Cloudflare dashboard URL (dash.cloudflare.com/<ID>/...)
+
+name: Deploy Worker
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - cloudflare-worker.js
+      - wrangler.toml
+      - .github/workflows/deploy-worker.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-worker
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Deploy to Cloudflare
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy
