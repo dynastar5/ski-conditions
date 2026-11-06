@@ -1,0 +1,13 @@
+# Cloudflare Worker config for the dashboard's CORS proxy.
+# Cloudflare's GitHub integration (Workers Builds) reads this file and runs
+# `npx wrangler deploy` on every push to main.
+#
+# `name` must match the existing Worker so deploys update it in place:
+# https://windy-proxy.dynastar5.workers.dev
+
+name = "windy-proxy"
+main = "cloudflare-worker.js"
+compatibility_date = "2025-09-01"
+
+# Keep the existing workers.dev URL that the dashboard calls.
+workers_dev = true
