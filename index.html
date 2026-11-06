@@ -651,9 +651,9 @@ function renderAlerts(a,err){
 
 /* ── Season status ──
    Update these when resorts announce dates. open:null means "not announced yet".
-   Breck: Nov 6, 2026 (Vail Resorts announcement). Keystone: "as soon as possible in October", no date. */
+   Breck: Nov 6, 2026 (Vail Resorts announcement). Keystone: opened Oct 30, 2026. */
 const SEASON={
-  key:  {open:null,        close:null},
+  key:  {open:'2026-10-30',close:null},
   breck:{open:'2026-11-06',close:null},
 };
 function todayMT(){return new Date().toLocaleDateString('en-CA',{timeZone:'America/Denver'});} // YYYY-MM-DD
