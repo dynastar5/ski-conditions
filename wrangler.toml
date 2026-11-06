@@ -7,6 +7,7 @@
 
 name = "windy-proxy"
 main = "cloudflare-worker.js"
+account_id = "4878b9aa480cec5fa6a44701e136585b"
 compatibility_date = "2025-09-01"
 
 # Keep the existing workers.dev URL that the dashboard calls.

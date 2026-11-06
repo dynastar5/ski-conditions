@@ -13,7 +13,8 @@ Live at https://dynastar5.github.io/ski-conditions/
 
 `.github/workflows/deploy-worker.yml` deploys the Worker with GitHub Actions whenever `cloudflare-worker.js`, `wrangler.toml` or the workflow changes on `main`. You can also run it by hand from the **Actions** tab (**Deploy Worker → Run workflow**).
 
-It needs two repository secrets, under **Settings → Secrets and variables → Actions**:
+It needs one repository secret, under **Settings → Secrets and variables → Actions**:
 
 - `CLOUDFLARE_API_TOKEN`: create it in Cloudflare under **windy-proxy → Settings → Builds → API token for external CI/CD → Create token**.
-- `CLOUDFLARE_ACCOUNT_ID`: the long ID in your Cloudflare dashboard URL (`dash.cloudflare.com/<ID>/...`).
+
+The Cloudflare account ID is set in `wrangler.toml`.
