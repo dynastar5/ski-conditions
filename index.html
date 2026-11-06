@@ -9,50 +9,50 @@
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:system-ui,sans-serif;background:#0b0e1a;color:#e8eaf0;padding:1.2rem;max-width:1200px;margin:0 auto}
 h1{font-size:1.4rem;font-weight:700;margin-bottom:2px;background:linear-gradient(90deg,#60a5fa,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.sub{font-size:.72rem;color:#4b5563;margin-bottom:1rem}
+.sub{font-size:.72rem;color:#959fb1;margin-bottom:1rem}
 .btn{background:#4f6ef7;color:#fff;border:none;border-radius:8px;padding:9px 22px;font-weight:500;cursor:pointer;font-size:.85rem;margin-bottom:1rem}
-.btn:disabled{background:#2d3148;color:#6b7280;cursor:default}
+.btn:disabled{background:#2d3148;color:#a7b0bf;cursor:default}
 .main-tabs{display:flex;gap:4px;margin-bottom:1rem;border-bottom:1px solid #1e2240;overflow-x:auto;scrollbar-width:none}
 .main-tabs::-webkit-scrollbar{display:none}
-.main-tab{white-space:nowrap;flex-shrink:0;padding:8px 20px;font-size:.82rem;font-weight:600;cursor:pointer;border:none;background:transparent;color:#4b5563;border-bottom:2px solid transparent;transition:all .2s}
+.main-tab{white-space:nowrap;flex-shrink:0;padding:8px 20px;font-size:.82rem;font-weight:600;cursor:pointer;border:none;background:transparent;color:#959fb1;border-bottom:2px solid transparent;transition:all .2s}
 .main-tab.on{color:#e8eaf0;border-bottom-color:#4f6ef7}
-.main-tab:hover{color:#9ca3af}
+.main-tab:hover{color:#c4cbd6}
 .tab-panel{display:none}.tab-panel.on{display:block}
 .resorts{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:1rem}
 .resort{background:#131627;border:1px solid #1e2240;border-radius:12px;padding:1rem;overflow:hidden}
 .resort-header{display:flex;align-items:center;gap:10px;margin-bottom:1rem}
-.resort-icon{font-size:1.4rem}.resort-name{font-size:1.05rem;font-weight:700}.resort-elev{font-size:.65rem;color:#4b5563;margin-top:2px}
+.resort-icon{font-size:1.4rem}.resort-name{font-size:1.05rem;font-weight:700}.resort-elev{font-size:.65rem;color:#959fb1;margin-top:2px}
 .zone{margin-bottom:.8rem}
-.zone-label{font-size:.6rem;font-weight:600;color:#4b5563;text-transform:uppercase;letter-spacing:.8px;margin-bottom:.5rem;display:flex;align-items:center;gap:6px}
+.zone-label{font-size:.6rem;font-weight:600;color:#959fb1;text-transform:uppercase;letter-spacing:.8px;margin-bottom:.5rem;display:flex;align-items:center;gap:6px}
 .zone-label .dot{width:6px;height:6px;border-radius:50%}
 .metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
 .metric{background:#0f1221;border:1px solid #1a1e35;border-radius:8px;padding:.6rem}
-.metric-label{font-size:.58rem;color:#4b5563;text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px}
+.metric-label{font-size:.58rem;color:#959fb1;text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px}
 .metric-value{font-size:1.3rem;font-weight:700}
-.metric-unit{font-size:.7rem;color:#6b7280;font-weight:400}
-.metric-sub{font-size:.6rem;color:#4b5563;margin-top:2px}
+.metric-unit{font-size:.7rem;color:#a7b0bf;font-weight:400}
+.metric-sub{font-size:.6rem;color:#959fb1;margin-top:2px}
 .snowfall-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:.8rem}
 .snow-card{background:#0f1221;border:1px solid #1a1e35;border-radius:8px;padding:.6rem;text-align:center}
-.snow-card-label{font-size:.58rem;color:#4b5563;text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px}
+.snow-card-label{font-size:.58rem;color:#959fb1;text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px}
 .snow-card-value{font-size:1.2rem;font-weight:700;color:#60a5fa}
-.snow-card-value .unit{font-size:.7rem;color:#6b7280;font-weight:400}
+.snow-card-value .unit{font-size:.7rem;color:#a7b0bf;font-weight:400}
 .mini-chart{position:relative;width:100%;height:140px;margin-top:.5rem}
 .shared-section{background:#131627;border:1px solid #1e2240;border-radius:12px;padding:1rem;margin-bottom:1rem}
 .shared-title{font-size:.85rem;font-weight:600;margin-bottom:.8rem;display:flex;align-items:center;gap:8px}
 .chart-wrap{position:relative;width:100%;height:220px}
 .legend{display:flex;gap:16px;margin-bottom:.6rem;flex-wrap:wrap}
-.legend-item{display:flex;align-items:center;gap:5px;font-size:.7rem;color:#9ca3af}
+.legend-item{display:flex;align-items:center;gap:5px;font-size:.7rem;color:#c4cbd6}
 .legend-pip{width:10px;height:3px;border-radius:2px}
-.status{font-size:.72rem;color:#4b5563;text-align:center;padding:.5rem 0}
+.status{font-size:.72rem;color:#959fb1;text-align:center;padding:.5rem 0}
 .freeze-bar{height:6px;border-radius:3px;margin-top:4px;overflow:hidden}
 .freeze-fill{height:100%;border-radius:3px;transition:width .5s}
-.wind-dir{font-size:.65rem;color:#6b7280}
+.wind-dir{font-size:.65rem;color:#a7b0bf}
 .loading-pulse{animation:pulse 1.5s infinite}
 @keyframes pulse{0%,100%{opacity:.4}50%{opacity:1}}
 .powder-alert{background:linear-gradient(135deg,#1e3a5f,#1a2744);border:1px solid #3b82f6;border-radius:10px;padding:.8rem;margin-bottom:.8rem;display:flex;align-items:center;gap:10px}
 .powder-alert .pa-icon{font-size:1.8rem}
 .powder-alert .pa-text{font-size:.85rem;font-weight:600;color:#60a5fa}
-.powder-alert .pa-sub{font-size:.68rem;color:#6b7280;margin-top:2px}
+.powder-alert .pa-sub{font-size:.68rem;color:#a7b0bf;margin-top:2px}
 .snow-quality{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:10px;font-size:.65rem;font-weight:600;margin-top:4px}
 .sq-champ{background:#7c3aed22;color:#a78bfa;border:1px solid #7c3aed44}
 .sq-dry{background:#3b82f622;color:#60a5fa;border:1px solid #3b82f644}
@@ -60,29 +60,29 @@ h1{font-size:1.4rem;font-weight:700;margin-bottom:2px;background:linear-gradient
 .sq-wet{background:#f59e0b22;color:#f59e0b;border:1px solid #f59e0b44}
 .sq-heavy{background:#ef444422;color:#ef4444;border:1px solid #ef444444}
 .inversion-bar{display:flex;align-items:center;gap:8px;margin-top:4px}
-.inv-label{font-size:.65rem;color:#6b7280;width:50px}
+.inv-label{font-size:.65rem;color:#a7b0bf;width:50px}
 .inv-bar{flex:1;height:14px;background:#1a1e35;border-radius:4px;overflow:hidden;display:flex}
 .inv-fill{height:100%;display:flex;align-items:center;justify-content:center;font-size:.55rem;font-weight:600;color:#fff;min-width:30px}
-.groom-updated{font-size:.6rem;color:#4b5563}
+.groom-updated{font-size:.6rem;color:#959fb1}
 .groom-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:.8rem}
-.groom-area{font-size:.6rem;font-weight:600;color:#4b5563;text-transform:uppercase;letter-spacing:.8px;margin:.7rem 0 .3rem}
+.groom-area{font-size:.6rem;font-weight:600;color:#959fb1;text-transform:uppercase;letter-spacing:.8px;margin:.7rem 0 .3rem}
 .groom-trail{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid #1a1e3544;font-size:.75rem}
 .groom-trail .gt-icon{width:22px;text-align:center;font-size:.7rem;flex-shrink:0}
 .groom-trail .gt-name{flex:1;color:#e8eaf0}
 .groom-tag{font-size:.58rem;padding:1px 7px;border-radius:8px;font-weight:600}
 .groom-tag.closed{background:#ef444422;color:#ef4444}
 .groom-tag.work{background:#f59e0b22;color:#f59e0b}
-.groom-empty{background:#0f1221;border:1px solid #1a1e35;border-radius:8px;padding:.8rem;font-size:.75rem;color:#6b7280;text-align:center}
-.groom-more summary{font-size:.7rem;color:#9ca3af;cursor:pointer;margin:.6rem 0 .3rem}
+.groom-empty{background:#0f1221;border:1px solid #1a1e35;border-radius:8px;padding:.8rem;font-size:.75rem;color:#a7b0bf;text-align:center}
+.groom-more summary{font-size:.7rem;color:#c4cbd6;cursor:pointer;margin:.6rem 0 .3rem}
 .i70-status{display:inline-block;font-size:.68rem;font-weight:600;padding:3px 10px;border-radius:10px;margin-bottom:.6rem}
 .i70-status.ok{background:#22c55e22;color:#22c55e;border:1px solid #22c55e44}
 .i70-status.bad{background:#ef444422;color:#ef4444;border:1px solid #ef444444}
 .i70-item{background:#0f1221;border:1px solid #1a1e35;border-left:3px solid #6b7280;border-radius:6px;padding:.5rem .6rem;margin-bottom:.4rem}
 .i70-item.r0{border-left-color:#ef4444}.i70-item.r1{border-left-color:#f97316}.i70-item.r2{border-left-color:#f59e0b}.i70-item.r3{border-left-color:#60a5fa}.i70-item.r4{border-left-color:#4b5563}
-.i70-head{font-size:.62rem;color:#6b7280;text-transform:uppercase;letter-spacing:.5px}
+.i70-head{font-size:.62rem;color:#a7b0bf;text-transform:uppercase;letter-spacing:.5px}
 .i70-title{font-size:.75rem;color:#e8eaf0;margin-top:2px}
-.i70-brief{font-size:.65rem;color:#6b7280;margin-top:1px}
-.i70-work summary{font-size:.7rem;color:#9ca3af;cursor:pointer;margin:.4rem 0}
+.i70-brief{font-size:.65rem;color:#a7b0bf;margin-top:1px}
+.i70-work summary{font-size:.7rem;color:#c4cbd6;cursor:pointer;margin:.4rem 0}
 .aqi-bar{height:8px;border-radius:4px;margin-top:4px;overflow:hidden;background:#1a1e35}
 .aqi-fill{height:100%;border-radius:4px;transition:width .5s}
 .alert-card{background:#0f1221;border-left:3px solid;border-radius:6px;padding:.8rem;margin-bottom:.6rem}
@@ -92,19 +92,19 @@ h1{font-size:1.4rem;font-weight:700;margin-bottom:2px;background:linear-gradient
 .alert-card.minor{border-color:#60a5fa;background:#0f121a}
 .alert-card.unknown{border-color:#6b7280}
 .alert-event{font-size:.85rem;font-weight:600;margin-bottom:3px}
-.alert-meta{font-size:.65rem;color:#4b5563;margin-bottom:5px}
-.alert-desc{font-size:.72rem;color:#9ca3af;line-height:1.5;max-height:80px;overflow:hidden;transition:max-height .3s}
+.alert-meta{font-size:.65rem;color:#959fb1;margin-bottom:5px}
+.alert-desc{font-size:.72rem;color:#c4cbd6;line-height:1.5;max-height:80px;overflow:hidden;transition:max-height .3s}
 .alert-desc.expanded{max-height:2000px}
 .alert-toggle{font-size:.65rem;color:#4f6ef7;cursor:pointer;border:none;background:none;padding:2px 0;margin-top:3px}
 .no-alerts{background:#22c55e11;border:1px solid #22c55e33;border-radius:8px;padding:1rem;text-align:center;color:#22c55e;font-size:.85rem}
 .snotel-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px}
 .snotel-station{background:#0f1221;border:1px solid #1a1e35;border-radius:8px;padding:.8rem}
 .snotel-name{font-size:.8rem;font-weight:600;margin-bottom:2px}
-.snotel-info{font-size:.6rem;color:#4b5563;margin-bottom:.6rem}
+.snotel-info{font-size:.6rem;color:#959fb1;margin-bottom:.6rem}
 .snotel-metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
 .snotel-metric{text-align:center}
 .snotel-metric-value{font-size:1.1rem;font-weight:700;color:#60a5fa}
-.snotel-metric-label{font-size:.55rem;color:#4b5563;text-transform:uppercase;letter-spacing:.5px;margin-top:2px}
+.snotel-metric-label{font-size:.55rem;color:#959fb1;text-transform:uppercase;letter-spacing:.5px;margin-top:2px}
 .trail-resorts{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .trail-resort{background:#131627;border:1px solid #1e2240;border-radius:12px;padding:1rem}
 .trail-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem}
@@ -113,26 +113,26 @@ h1{font-size:1.4rem;font-weight:700;margin-bottom:2px;background:linear-gradient
 .season-badge.closed{background:#ef444422;color:#ef4444;border:1px solid #ef444444}
 .season-badge.open{background:#22c55e22;color:#22c55e;border:1px solid #22c55e44}
 .season-badge.soon{background:#f59e0b22;color:#f59e0b;border:1px solid #f59e0b44}
-.season-note{font-size:.65rem;color:#6b7280;margin:-.5rem 0 .8rem}
+.season-note{font-size:.65rem;color:#a7b0bf;margin:-.5rem 0 .8rem}
 .trail-summary{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:1rem}
 .trail-stat{background:#0f1221;border:1px solid #1a1e35;border-radius:8px;padding:.7rem;text-align:center}
 .trail-stat-value{font-size:1.5rem;font-weight:700}
-.trail-stat-label{font-size:.6rem;color:#4b5563;text-transform:uppercase;letter-spacing:.5px;margin-top:3px}
+.trail-stat-label{font-size:.6rem;color:#959fb1;text-transform:uppercase;letter-spacing:.5px;margin-top:3px}
 .diff-row{display:flex;align-items:center;gap:8px;margin-bottom:6px}
 .diff-icon{width:18px;font-size:.7rem;flex-shrink:0;text-align:center}
-.diff-label{font-size:.7rem;color:#9ca3af;width:90px;flex-shrink:0}
+.diff-label{font-size:.7rem;color:#c4cbd6;width:90px;flex-shrink:0}
 .diff-bar-bg{flex:1;height:8px;background:#1a1e35;border-radius:4px;overflow:hidden}
 .diff-bar-fill{height:100%;border-radius:4px}
-.diff-count{font-size:.7rem;color:#6b7280;width:40px;text-align:right}
-.lift-section-label{font-size:.6rem;font-weight:600;color:#4b5563;text-transform:uppercase;letter-spacing:.8px;margin-bottom:.5rem;margin-top:.8rem}
+.diff-count{font-size:.7rem;color:#a7b0bf;width:40px;text-align:right}
+.lift-section-label{font-size:.6rem;font-weight:600;color:#959fb1;text-transform:uppercase;letter-spacing:.8px;margin-bottom:.5rem;margin-top:.8rem}
 .lift-item{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid #1a1e3544;font-size:.75rem}
 .lift-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
 .lift-dot.closed{background:#ef4444}
 .lift-dot.open{background:#22c55e}
 .lift-dot.hold{background:#f59e0b}
 .lift-dot.unknown{background:#374151}
-.lift-name{flex:1;color:#9ca3af}
-.lift-type{font-size:.6rem;color:#374151}
+.lift-name{flex:1;color:#c4cbd6}
+.lift-type{font-size:.6rem;color:#8a93a5}
 .trail-link{font-size:.7rem;color:#4f6ef7;text-decoration:none;padding:4px 12px;border:1px solid #4f6ef733;border-radius:6px;display:inline-block;margin:2px}
 @media(max-width:700px){body{padding:.7rem}.resorts,.trail-resorts{grid-template-columns:1fr}.metric-value{font-size:1.1rem}.mini-chart{height:120px}.chart-wrap{height:180px}.main-tab{padding:6px 12px;font-size:.72rem}.metrics{gap:5px}.metric{padding:.5rem}}
 @media(min-width:1000px){.mini-chart{height:160px}.chart-wrap{height:260px}}
@@ -152,12 +152,12 @@ h1{font-size:1.4rem;font-weight:700;margin-bottom:2px;background:linear-gradient
 <div class="tab-panel on" id="tab-conditions">
 <button class="btn" id="fetchBtn" onclick="fetchAll()">Refresh Conditions</button>
 <div class="resorts">
-  <div class="resort"><div class="resort-header"><span class="resort-icon">🏔</span><div><div class="resort-name" style="color:#60a5fa">Keystone</div><div class="resort-elev">Base 9,280' · Summit 12,408' · 3,149 acres</div></div></div><div id="key-content"><div class="loading-pulse" style="color:#4b5563;font-size:.8rem">Loading…</div></div></div>
-  <div class="resort"><div class="resort-header"><span class="resort-icon">⛰</span><div><div class="resort-name" style="color:#a78bfa">Breckenridge</div><div class="resort-elev">Base 9,600' · Summit 12,998' · 2,908 acres</div></div></div><div id="breck-content"><div class="loading-pulse" style="color:#4b5563;font-size:.8rem">Loading…</div></div></div>
+  <div class="resort"><div class="resort-header"><span class="resort-icon">🏔</span><div><div class="resort-name" style="color:#60a5fa">Keystone</div><div class="resort-elev">Base 9,280' · Summit 12,408' · 3,149 acres</div></div></div><div id="key-content"><div class="loading-pulse" style="color:#959fb1;font-size:.8rem">Loading…</div></div></div>
+  <div class="resort"><div class="resort-header"><span class="resort-icon">⛰</span><div><div class="resort-name" style="color:#a78bfa">Breckenridge</div><div class="resort-elev">Base 9,600' · Summit 12,998' · 2,908 acres</div></div></div><div id="breck-content"><div class="loading-pulse" style="color:#959fb1;font-size:.8rem">Loading…</div></div></div>
 </div>
 <div class="resorts">
-  <div class="shared-section" style="margin-bottom:0"><div class="shared-title">🌬 Air Quality</div><div id="aqi-content"><div class="loading-pulse" style="color:#4b5563;font-size:.8rem">Loading…</div></div></div>
-  <div class="shared-section" style="margin-bottom:0"><div class="shared-title">🛣 I-70 · Denver Airport → Vail</div><div id="i70-content"><div class="loading-pulse" style="color:#4b5563;font-size:.8rem">Loading…</div></div></div>
+  <div class="shared-section" style="margin-bottom:0"><div class="shared-title">🌬 Air Quality</div><div id="aqi-content"><div class="loading-pulse" style="color:#959fb1;font-size:.8rem">Loading…</div></div></div>
+  <div class="shared-section" style="margin-bottom:0"><div class="shared-title">🛣 I-70 · Denver Airport → Vail</div><div id="i70-content"><div class="loading-pulse" style="color:#959fb1;font-size:.8rem">Loading…</div></div></div>
 </div>
 <div class="shared-section" style="margin-top:1rem">
   <div class="shared-title">❄️ 7-Day Snowfall Forecast</div>
@@ -199,16 +199,16 @@ h1{font-size:1.4rem;font-weight:700;margin-bottom:2px;background:linear-gradient
 <!-- GROOMING -->
 <div class="tab-panel" id="tab-grooming">
 <div class="trail-resorts">
-  <div class="trail-resort"><div class="trail-header"><div class="trail-header-left"><span class="resort-icon">🏔</span><div class="resort-name" style="color:#60a5fa">Keystone</div></div></div><div id="key-grooming"><div class="loading-pulse" style="color:#4b5563;font-size:.8rem">Loading…</div></div></div>
-  <div class="trail-resort"><div class="trail-header"><div class="trail-header-left"><span class="resort-icon">⛰</span><div class="resort-name" style="color:#a78bfa">Breckenridge</div></div></div><div id="breck-grooming"><div class="loading-pulse" style="color:#4b5563;font-size:.8rem">Loading…</div></div></div>
+  <div class="trail-resort"><div class="trail-header"><div class="trail-header-left"><span class="resort-icon">🏔</span><div class="resort-name" style="color:#60a5fa">Keystone</div></div></div><div id="key-grooming"><div class="loading-pulse" style="color:#959fb1;font-size:.8rem">Loading…</div></div></div>
+  <div class="trail-resort"><div class="trail-header"><div class="trail-header-left"><span class="resort-icon">⛰</span><div class="resort-name" style="color:#a78bfa">Breckenridge</div></div></div><div id="breck-grooming"><div class="loading-pulse" style="color:#959fb1;font-size:.8rem">Loading…</div></div></div>
 </div>
 </div>
 
 <!-- ALERTS -->
 <div class="tab-panel" id="tab-alerts">
 <button class="btn" onclick="fetchAlerts()">Refresh Alerts</button>
-<div class="shared-section" style="border-color:#ef444433"><div class="shared-title">⚠️ NWS Alerts — Keystone & Breck</div><div id="alerts-content"><div class="loading-pulse" style="color:#4b5563;font-size:.8rem">Loading…</div></div></div>
-<div class="shared-section"><div class="shared-title">📡 SNOTEL Observations</div><div id="snotel-content"><div class="loading-pulse" style="color:#4b5563;font-size:.8rem">Loading…</div></div></div>
+<div class="shared-section" style="border-color:#ef444433"><div class="shared-title">⚠️ NWS Alerts — Keystone & Breck</div><div id="alerts-content"><div class="loading-pulse" style="color:#959fb1;font-size:.8rem">Loading…</div></div></div>
+<div class="shared-section"><div class="shared-title">📡 SNOTEL Observations</div><div id="snotel-content"><div class="loading-pulse" style="color:#959fb1;font-size:.8rem">Loading…</div></div></div>
 <div class="shared-section"><div class="shared-title">🔗 Resources</div><div>
   <a class="trail-link" href="https://www.weather.gov/bou/" target="_blank">NWS Boulder ↗</a>
   <a class="trail-link" href="https://avalanche.state.co.us/forecasts/backcountry-avalanche/vail-summit-county" target="_blank">CAIC Avalanche ↗</a>
@@ -282,7 +282,7 @@ function renderLifts(){
       h+=`<div class="lift-section-label" style="margin-top:.4rem">${p}</div>`;
       ls.forEach(l=>{h+=`<div class="lift-item"><span class="lift-dot unknown"></span><span class="lift-name">${l.name}</span><span class="lift-type">${l.type}</span></div>`;});
     });
-    h+=`<div style="font-size:.62rem;color:#4b5563;margin-top:.5rem">${SURFACE_NOTE[id]}</div>`;
+    h+=`<div style="font-size:.62rem;color:#959fb1;margin-top:.5rem">${SURFACE_NOTE[id]}</div>`;
     document.getElementById(id+'-lifts').innerHTML=h;
   });
 }
@@ -404,7 +404,7 @@ function renderResort(id,data){
   const isPowder=sn24>=6;
   const uvMax=s.daily?.uv_index_max?.[0]||0;const uv=uvLabel(uvMax);
   const vis=s.hourly?.visibility?.[hIdx];
-  const vl=vis!==undefined&&vis!==null?visLabel(vis):{text:'—',color:'#4b5563',warn:''};
+  const vl=vis!==undefined&&vis!==null?visLabel(vis):{text:'—',color:'#959fb1',warn:''};
   const sDew=sC.dew_point_2m,bDew=bC.dew_point_2m;
   const sunrise=s.daily?.sunrise?.[0],sunset=s.daily?.sunset?.[0];
   const spread=Math.round(bC.temperature_2m-sC.temperature_2m);
@@ -441,7 +441,7 @@ function renderResort(id,data){
   html+=`<div class="zone"><div class="zone-label">Freezing Level</div>
     <div style="font-size:.85rem;font-weight:600;color:${fc}">${fFt?fFt.toLocaleString()+"'":"—"}</div>
     <div class="freeze-bar" style="background:#1a1e35"><div class="freeze-fill" style="width:${fp}%;background:${fc}"></div></div>
-    <div style="display:flex;justify-content:space-between;font-size:.55rem;color:#374151;margin-top:2px"><span>Base</span><span>Summit</span></div></div>`;
+    <div style="display:flex;justify-content:space-between;font-size:.55rem;color:#8a93a5;margin-top:2px"><span>Base</span><span>Summit</span></div></div>`;
   html+=`<div class="zone"><div class="zone-label">☀️ Daylight (MT)</div>
     <div class="metrics" style="grid-template-columns:1fr 1fr">
       <div class="metric"><div class="metric-label">Sunrise</div><div class="metric-value" style="font-size:1rem;color:#f59e0b">${fmtClock(sunrise)}</div></div>
@@ -455,12 +455,12 @@ function renderResort(id,data){
   miniCharts[id]=new Chart(document.getElementById('mc-'+id),{type:'line',data:{labels:times.map(t=>hourLabel(t,false)),datasets:[
     {data:temps,borderColor:r.color,backgroundColor:r.color+'22',borderWidth:2,pointRadius:0,tension:.3,fill:true},
     {data:Array(temps.length).fill(32),borderColor:'#22c55e44',borderWidth:1,borderDash:[4,4],pointRadius:0}
-  ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{mode:'index',intersect:false,callbacks:{label:c=>c.parsed.y+'°F'}}},scales:{x:{ticks:{color:'#374151',font:{size:9},maxTicksLimit:8,maxRotation:0},grid:{color:'#131627'}},y:{ticks:{color:'#374151',font:{size:9},callback:v=>v+'°'},grid:{color:'#1a1e35'}}}}});
+  ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{mode:'index',intersect:false,callbacks:{label:c=>c.parsed.y+'°F'}}},scales:{x:{ticks:{color:'#8a93a5',font:{size:9},maxTicksLimit:8,maxRotation:0},grid:{color:'#131627'}},y:{ticks:{color:'#8a93a5',font:{size:9},callback:v=>v+'°'},grid:{color:'#1a1e35'}}}}});
 }
 
 function renderAQI(data){
   const el=document.getElementById('aqi-content');
-  if(data.error){el.innerHTML=`<div style="color:#6b7280;font-size:.75rem">${data.error}</div>`;return;}
+  if(data.error){el.innerHTML=`<div style="color:#a7b0bf;font-size:.75rem">${data.error}</div>`;return;}
   const aqi=data.current?.us_aqi||0,pm25=data.current?.pm2_5||0,pm10=data.current?.pm10||0;
   const a=aqiLabel(aqi);
   el.innerHTML=`<div class="metrics">
@@ -480,7 +480,7 @@ function renderSnowChart(){
   });
   const d=[allResortData.key,allResortData.breck].find(x=>x&&!x.error);
   const lbls=(d?.summit?.daily?.time||[]).slice(0,7).map(t=>new Date(t+'T12:00:00').toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'}));
-  snowChartInst=new Chart(ctx,{type:'bar',data:{labels:lbls,datasets:ds},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{mode:'index',intersect:false,callbacks:{label:c=>c.dataset.label+': '+c.parsed.y.toFixed(1)+' in'}}},scales:{x:{ticks:{color:'#4b5563',font:{size:10}},grid:{color:'#131627'}},y:{ticks:{color:'#4b5563',font:{size:10},callback:v=>v+'"'},grid:{color:'#1a1e35'}}}}});
+  snowChartInst=new Chart(ctx,{type:'bar',data:{labels:lbls,datasets:ds},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{mode:'index',intersect:false,callbacks:{label:c=>c.dataset.label+': '+c.parsed.y.toFixed(1)+' in'}}},scales:{x:{ticks:{color:'#959fb1',font:{size:10}},grid:{color:'#131627'}},y:{ticks:{color:'#959fb1',font:{size:10},callback:v=>v+'"'},grid:{color:'#1a1e35'}}}}});
 }
 
 function renderTempCompChart(){
@@ -493,7 +493,7 @@ function renderTempCompChart(){
     ds.push({label:r.name,data:temps,borderColor:r.color,backgroundColor:'transparent',borderWidth:2,pointRadius:0,tension:.3});
   });
   ds.push({label:'Freezing',data:Array(lbls.length).fill(32),borderColor:'#22c55e44',borderWidth:1,borderDash:[4,4],pointRadius:0});
-  tempCompChartInst=new Chart(ctx,{type:'line',data:{labels:lbls,datasets:ds},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{mode:'index',intersect:false,callbacks:{label:c=>c.dataset.label+': '+c.parsed.y+'°F'}}},scales:{x:{ticks:{color:'#4b5563',font:{size:10},maxTicksLimit:12,maxRotation:0},grid:{color:'#131627'}},y:{ticks:{color:'#4b5563',font:{size:10},callback:v=>v+'°'},grid:{color:'#1a1e35'}}}}});
+  tempCompChartInst=new Chart(ctx,{type:'line',data:{labels:lbls,datasets:ds},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{mode:'index',intersect:false,callbacks:{label:c=>c.dataset.label+': '+c.parsed.y+'°F'}}},scales:{x:{ticks:{color:'#959fb1',font:{size:10},maxTicksLimit:12,maxRotation:0},grid:{color:'#131627'}},y:{ticks:{color:'#959fb1',font:{size:10},callback:v=>v+'°'},grid:{color:'#1a1e35'}}}}});
 }
 
 /* ── I-70 Corridor (CDOT COtrip feed) ──
@@ -533,7 +533,7 @@ async function fetchI70(){
 function renderI70(items,err){
   const el=document.getElementById('i70-content');
   const links=`<div style="margin-top:.6rem"><a class="trail-link" href="https://www.cotrip.org/?layers=closures%2Ctraffic_incidents%2Croad_conditions%2Cchain%2Ftraction_law&lat=39.68&lng=-105.55&zoom=9.00" target="_blank">COtrip Map ↗</a><a class="trail-link" href="https://www.codot.gov/travel/i70mountain" target="_blank">CDOT I-70 ↗</a></div>`;
-  if(err){el.innerHTML=`<div style="color:#6b7280;font-size:.75rem">Couldn't reach COtrip: ${esc(err)}</div>`+links;return;}
+  if(err){el.innerHTML=`<div style="color:#a7b0bf;font-size:.75rem">Couldn't reach COtrip: ${esc(err)}</div>`+links;return;}
   const row=i=>{
     const mp=Math.round(i.lo)===Math.round(i.hi)?`MP ${Math.round(i.lo)}`:`MP ${Math.round(i.lo)}–${Math.round(i.hi)}`;
     const upd=i.updated?' · '+new Date(i.updated).toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit',timeZone:'America/Denver'}):'';
@@ -594,7 +594,7 @@ async function fetchNWSAlerts(){
 }
 function renderAlerts(a,err){
   const el=document.getElementById('alerts-content');
-  if(err){el.innerHTML=`<div style="color:#6b7280;font-size:.8rem">Couldn't reach NWS: ${err}</div>`;return;}
+  if(err){el.innerHTML=`<div style="color:#a7b0bf;font-size:.8rem">Couldn't reach NWS: ${err}</div>`;return;}
   if(!a.length){el.innerHTML='<div class="no-alerts">✅ No active alerts for Keystone or Breckenridge</div>';return;}
   let h='';
   a.forEach((x,i)=>{
@@ -668,7 +668,7 @@ function renderSnotel(stations){
   const el=document.getElementById('snotel-content');
   let h='<div class="snotel-grid">';
   stations.forEach(s=>{
-    if(s.error){h+=`<div class="snotel-station"><div class="snotel-name">${s.name}</div><div class="snotel-info">#${s.id} · ${s.note}</div><div style="color:#6b7280;font-size:.75rem">${s.error}</div></div>`;return;}
+    if(s.error){h+=`<div class="snotel-station"><div class="snotel-name">${s.name}</div><div class="snotel-info">#${s.id} · ${s.note}</div><div style="color:#a7b0bf;font-size:.75rem">${s.error}</div></div>`;return;}
     h+=`<div class="snotel-station"><div class="snotel-name">📡 ${s.name}</div><div class="snotel-info">#${s.id} · ${s.note} · ${s.date}</div><div class="snotel-metrics">
       <div class="snotel-metric"><div class="snotel-metric-value">${s.snowDepth!==null?s.snowDepth+'"':'—'}</div><div class="snotel-metric-label">Snow Depth</div></div>
       <div class="snotel-metric"><div class="snotel-metric-value" style="color:#a78bfa">${s.swe!==null?s.swe+'"':'—'}</div><div class="snotel-metric-label">SWE</div></div>
@@ -678,8 +678,8 @@ function renderSnotel(stations){
   el.innerHTML=h+'</div>';
 }
 async function fetchAlerts(){
-  document.getElementById('alerts-content').innerHTML='<div class="loading-pulse" style="color:#4b5563">Loading…</div>';
-  document.getElementById('snotel-content').innerHTML='<div class="loading-pulse" style="color:#4b5563">Loading…</div>';
+  document.getElementById('alerts-content').innerHTML='<div class="loading-pulse" style="color:#959fb1">Loading…</div>';
+  document.getElementById('snotel-content').innerHTML='<div class="loading-pulse" style="color:#959fb1">Loading…</div>';
   const[a,s]=await Promise.allSettled([fetchNWSAlerts(),fetchSnotel()]);
   if(a.status==='fulfilled')renderAlerts(a.value);else renderAlerts([],a.reason?.message||'unknown error');
   renderSnotel(s.status==='fulfilled'?s.value:[]);
